@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+    container_name: app
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=jdbc:postgresql
+      - DB_PORT=//postgres:5432
+      - SCHEMA_NAME=booking_hotels
+      - DB_USERNAME=postgres
+      - DB_USER_PASSWORD=password
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: "booking_hotels"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"

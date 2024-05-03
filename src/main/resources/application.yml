@@ -1,0 +1,12 @@
+spring.application.name: booking.hotels
+spring:
+  datasource:
+    url: ${DB_HOST}:${DB_PORT}/${SCHEMA_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_USER_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
