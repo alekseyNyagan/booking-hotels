@@ -11,7 +11,7 @@ services:
       - "8080:8080"
     environment:
       - DB_HOST=jdbc:postgresql
-      - DB_PORT=//postgres:5432
+      - DB_PORT=postgres:5432
       - SCHEMA_NAME=booking_hotels
       - DB_USERNAME=postgres
       - DB_USER_PASSWORD=password

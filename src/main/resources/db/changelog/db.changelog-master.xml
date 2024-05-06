@@ -7,4 +7,5 @@
     <changeSet id="0" author="admin">
 
     </changeSet>
+    <include file="db/changelog/2024/05/add-hotel-table.xml"/>
 </databaseChangeLog>
