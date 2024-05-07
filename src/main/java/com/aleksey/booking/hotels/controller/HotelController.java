@@ -4,6 +4,7 @@ import com.aleksey.booking.hotels.api.request.UpsertHotelRequest;
 import com.aleksey.booking.hotels.api.response.HotelListResponse;
 import com.aleksey.booking.hotels.api.response.HotelResponse;
 import com.aleksey.booking.hotels.service.HotelService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +27,12 @@ public class HotelController {
     }
 
     @PostMapping
-    public ResponseEntity<HotelResponse> createHotel(@RequestBody UpsertHotelRequest upsertHotelRequest) {
+    public ResponseEntity<HotelResponse> createHotel(@RequestBody @Valid UpsertHotelRequest upsertHotelRequest) {
         return ResponseEntity.ok(hotelService.createHotel(upsertHotelRequest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HotelResponse> updateHotel(@PathVariable Long id, @RequestBody UpsertHotelRequest upsertHotelRequest) {
+    public ResponseEntity<HotelResponse> updateHotel(@PathVariable Long id, @RequestBody @Valid UpsertHotelRequest upsertHotelRequest) {
         return ResponseEntity.ok(hotelService.updateHotel(id, upsertHotelRequest));
     }
 
