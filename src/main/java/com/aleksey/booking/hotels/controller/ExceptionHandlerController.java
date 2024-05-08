@@ -1,6 +1,7 @@
 package com.aleksey.booking.hotels.controller;
 
 import com.aleksey.booking.hotels.api.response.ErrorResponse;
+import com.aleksey.booking.hotels.exception.UserExistException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -17,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class ExceptionHandlerController {
 
-    @ExceptionHandler
+    @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> notFound(EntityNotFoundException ex) {
         log.error(ex.getMessage(), ex);
 
@@ -37,5 +38,11 @@ public class ExceptionHandlerController {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(errorMessage));
+    }
+
+    @ExceptionHandler(UserExistException.class)
+    public ResponseEntity<ErrorResponse> userExist(UserExistException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(ex.getLocalizedMessage()));
     }
 }
