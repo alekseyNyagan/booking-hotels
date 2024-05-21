@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1715664029851-1" author="aleksey (generated)">
+        <createTable tableName="booking">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_booking"/>
+            </column>
+            <column name="arrival_date" type="DATE"/>
+            <column name="departure_date" type="DATE"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1715664029851-2" author="aleksey (generated)">
+        <addColumn tableName="room">
+            <column name="booking_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1715664029851-3" author="aleksey (generated)">
+        <addUniqueConstraint columnNames="user_id" constraintName="uc_booking_user" tableName="booking"/>
+    </changeSet>
+    <changeSet id="1715664029851-4" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="booking" constraintName="FK_BOOKING_ON_USER"
+                                 referencedColumnNames="id" referencedTableName="user_table"/>
+    </changeSet>
+    <changeSet id="1715664029851-5" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="booking_id" baseTableName="room" constraintName="FK_ROOM_ON_BOOKING"
+                                 referencedColumnNames="id" referencedTableName="booking"/>
+    </changeSet>
+
+</databaseChangeLog>

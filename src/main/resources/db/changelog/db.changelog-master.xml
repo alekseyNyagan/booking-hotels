@@ -10,4 +10,5 @@
     <include file="db/changelog/2024/05/add-hotel-table.xml"/>
     <include file="/db/changelog/2024/05/add-room-and-unavailable_dates-tables.xml"/>
     <include file="/db/changelog/2024/05/add-user-table.xml"/>
+    <include file="db/changelog/2024/05/add-booking-table.xml"/>
 </databaseChangeLog>

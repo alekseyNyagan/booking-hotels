@@ -5,6 +5,7 @@ import com.aleksey.booking.hotels.api.response.UserResponse;
 import com.aleksey.booking.hotels.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UpsertUserRequest upsertUserRequest) {
-        return ResponseEntity.ok(userService.create(upsertUserRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(upsertUserRequest));
     }
 
     @PutMapping("/{id}")

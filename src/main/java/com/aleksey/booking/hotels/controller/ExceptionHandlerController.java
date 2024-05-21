@@ -1,6 +1,7 @@
 package com.aleksey.booking.hotels.controller;
 
 import com.aleksey.booking.hotels.api.response.ErrorResponse;
+import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
 import com.aleksey.booking.hotels.exception.UserExistException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,12 @@ public class ExceptionHandlerController {
     @ExceptionHandler(UserExistException.class)
     public ResponseEntity<ErrorResponse> userExist(UserExistException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(ex.getLocalizedMessage()));
+    }
+
+    @ExceptionHandler(RoomsUnavailableException.class)
+    public ResponseEntity<ErrorResponse> roomsUnavailable(RoomsUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getLocalizedMessage()));
     }
 }

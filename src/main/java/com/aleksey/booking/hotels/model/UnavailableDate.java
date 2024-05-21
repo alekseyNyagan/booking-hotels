@@ -14,7 +14,7 @@ import java.util.Objects;
 @ToString
 @Entity
 @Table(name = "unavailable_dates")
-public class UnavailableDates {
+public class UnavailableDate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +30,7 @@ public class UnavailableDates {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        UnavailableDates that = (UnavailableDates) o;
+        UnavailableDate that = (UnavailableDate) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
 
