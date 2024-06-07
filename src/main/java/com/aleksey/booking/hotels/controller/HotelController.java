@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,26 +19,31 @@ public class HotelController {
     private final HotelService hotelService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<HotelListResponse> getAllHotels() {
         return ResponseEntity.ok(hotelService.findAllHotels());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<HotelResponse> getHotelById(@PathVariable Long id) {
         return ResponseEntity.ok(hotelService.findById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HotelResponse> createHotel(@RequestBody @Valid UpsertHotelRequest upsertHotelRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(hotelService.createHotel(upsertHotelRequest));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HotelResponse> updateHotel(@PathVariable Long id, @RequestBody @Valid UpsertHotelRequest upsertHotelRequest) {
         return ResponseEntity.ok(hotelService.updateHotel(id, upsertHotelRequest));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteHotel(@PathVariable Long id) {
         hotelService.deleteHotel(id);
         return ResponseEntity.noContent().build();

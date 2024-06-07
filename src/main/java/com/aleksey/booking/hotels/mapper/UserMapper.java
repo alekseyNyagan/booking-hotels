@@ -5,6 +5,7 @@ import com.aleksey.booking.hotels.api.response.UserResponse;
 import com.aleksey.booking.hotels.model.User;
 import org.mapstruct.*;
 
+@DecoratedWith(UserMapperDelegate.class)
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
     User toEntity(UpsertUserRequest upsertUserRequest);

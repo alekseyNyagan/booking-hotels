@@ -1,6 +1,8 @@
 package com.aleksey.booking.hotels.controller;
 
 import com.aleksey.booking.hotels.api.response.ErrorResponse;
+import com.aleksey.booking.hotels.exception.AlreadyExistsException;
+import com.aleksey.booking.hotels.exception.RefreshTokenException;
 import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
 import com.aleksey.booking.hotels.exception.UserExistException;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,10 +23,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> notFound(EntityNotFoundException ex) {
-        log.error(ex.getMessage(), ex);
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(ex.getLocalizedMessage()));
+        return buildResponse(HttpStatus.NOT_FOUND, ex);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -43,13 +42,28 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(UserExistException.class)
     public ResponseEntity<ErrorResponse> userExist(UserExistException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(ex.getLocalizedMessage()));
+        return buildResponse(HttpStatus.CONFLICT, ex);
     }
 
     @ExceptionHandler(RoomsUnavailableException.class)
     public ResponseEntity<ErrorResponse> roomsUnavailable(RoomsUnavailableException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(ex.getLocalizedMessage()));
+        return buildResponse(HttpStatus.BAD_REQUEST, ex);
+    }
+
+    @ExceptionHandler(RefreshTokenException.class)
+    public ResponseEntity<ErrorResponse> refreshToken(RefreshTokenException ex) {
+        return buildResponse(HttpStatus.FORBIDDEN, ex);
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> alreadyExists(AlreadyExistsException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex);
+    }
+
+    private ResponseEntity<ErrorResponse> buildResponse(HttpStatus httpStatus, Exception ex) {
+        return ResponseEntity.status(httpStatus)
+                .body(ErrorResponse.builder()
+                        .errorMessage(ex.getMessage())
+                        .build());
     }
 }

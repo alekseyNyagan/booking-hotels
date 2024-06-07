@@ -16,6 +16,9 @@ public abstract class BookingMapperDelegate implements BookingMapper {
     @Autowired
     private RoomMapper roomMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Override
     public Booking toEntity(UpsertBookingRequest upsertBookingRequest, List<Room> rooms) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -34,13 +37,13 @@ public abstract class BookingMapperDelegate implements BookingMapper {
         return booking;
     }
 
+    @Override
     public BookingResponse toDto(Booking booking) {
         return new BookingResponse(
                 booking.getId()
                 , booking.getArrivalDate()
                 , booking.getDepartureDate()
-                , roomMapper.roomListToRoomInfoList(booking.getRooms()));
-
-        //TODO: create mapping for user when security will be configure
+                , roomMapper.roomListToRoomInfoList(booking.getRooms())
+                , userMapper.toDto(booking.getUser()));
     }
 }

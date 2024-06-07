@@ -14,12 +14,18 @@ services:
       - DB_PORT=postgres:5432
       - SCHEMA_NAME=booking_hotels
       - DB_USERNAME=postgres
-      - DB_USER_PASSWORD=password
+      - DB_USER_PASSWORD=postgres
 
   postgres:
-    image: postgres
+    image: postgres:16.3
     container_name: postgres
     environment:
-      POSTGRES_DB: "booking_hotels"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: booking_hotels
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

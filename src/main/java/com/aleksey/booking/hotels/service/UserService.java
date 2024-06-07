@@ -7,8 +7,6 @@ public interface UserService {
 
     UserResponse findById(Long id);
 
-    UserResponse create(UpsertUserRequest upsertUserRequest);
-
     UserResponse update(Long id, UpsertUserRequest upsertUserRequest);
 
     void delete(Long id);

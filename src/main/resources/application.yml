@@ -1,5 +1,9 @@
 spring.application.name: booking.hotels
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
   datasource:
     url: ${DB_HOST:jdbc:postgresql}://${DB_PORT:localhost:5432}/${SCHEMA_NAME:booking_hotels}
     username: ${DB_USERNAME:postgres}
@@ -12,3 +16,9 @@ spring:
     open-in-view: false
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
+
+app:
+  jwt:
+    secret: "my-32-character-ultra-secure-and-ultra-long-secret"
+    tokenExpiration: 3m
+    refreshTokenExpiration: 30m
