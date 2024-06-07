@@ -3,6 +3,7 @@ package com.aleksey.booking.hotels.controller;
 import com.aleksey.booking.hotels.api.request.UpsertHotelRequest;
 import com.aleksey.booking.hotels.api.response.HotelListResponse;
 import com.aleksey.booking.hotels.api.response.HotelResponse;
+import com.aleksey.booking.hotels.api.response.RateRequest;
 import com.aleksey.booking.hotels.service.HotelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,12 @@ public class HotelController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteHotel(@PathVariable Long id) {
         hotelService.deleteHotel(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/rate")
+    public ResponseEntity<Void> rate(@RequestBody @Valid RateRequest rateRequest) {
+        hotelService.rateHotel(rateRequest);
         return ResponseEntity.noContent().build();
     }
 }
