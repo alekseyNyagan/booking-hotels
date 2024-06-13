@@ -1,7 +1,9 @@
 package com.aleksey.booking.hotels.controller;
 
+import com.aleksey.booking.hotels.api.request.HotelFilter;
 import com.aleksey.booking.hotels.api.request.UpsertHotelRequest;
 import com.aleksey.booking.hotels.api.response.HotelListResponse;
+import com.aleksey.booking.hotels.api.response.HotelPaginationResponse;
 import com.aleksey.booking.hotels.api.response.HotelResponse;
 import com.aleksey.booking.hotels.api.response.RateRequest;
 import com.aleksey.booking.hotels.service.HotelService;
@@ -54,5 +56,10 @@ public class HotelController {
     public ResponseEntity<Void> rate(@RequestBody @Valid RateRequest rateRequest) {
         hotelService.rateHotel(rateRequest);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/hotelPage")
+    public ResponseEntity<HotelPaginationResponse> hotelPage(HotelFilter filter) {
+        return ResponseEntity.ok(hotelService.filterBy(filter));
     }
 }

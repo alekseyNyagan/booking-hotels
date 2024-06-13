@@ -1,16 +1,21 @@
 package com.aleksey.booking.hotels.service;
 
 
+import com.aleksey.booking.hotels.api.request.HotelFilter;
 import com.aleksey.booking.hotels.api.request.UpsertHotelRequest;
 import com.aleksey.booking.hotels.api.response.HotelListResponse;
+import com.aleksey.booking.hotels.api.response.HotelPaginationResponse;
 import com.aleksey.booking.hotels.api.response.HotelResponse;
 
 import com.aleksey.booking.hotels.api.response.RateRequest;
 import com.aleksey.booking.hotels.mapper.HotelMapper;
 import com.aleksey.booking.hotels.model.Hotel;
 import com.aleksey.booking.hotels.repository.HotelRepository;
+import com.aleksey.booking.hotels.repository.HotelSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -81,5 +86,12 @@ public class HotelServiceImpl implements HotelService {
         hotel.setMarksCount(++marksCount);
 
         hotelRepository.save(hotel);
+    }
+
+    @Override
+    public HotelPaginationResponse filterBy(HotelFilter hotelFilter) {
+        Page<Hotel> hotelsPage = hotelRepository.findAll(HotelSpecification.withFilter(hotelFilter),
+                PageRequest.of(hotelFilter.pageNumber(), hotelFilter.pageSize()));
+        return hotelMapper.hotelListToHotelPaginationResponse(hotelsPage.getTotalElements(), hotelsPage.getContent());
     }
 }

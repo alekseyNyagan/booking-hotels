@@ -2,6 +2,7 @@ package com.aleksey.booking.hotels.mapper;
 
 import com.aleksey.booking.hotels.api.request.UpsertHotelRequest;
 import com.aleksey.booking.hotels.api.response.HotelListResponse;
+import com.aleksey.booking.hotels.api.response.HotelPaginationResponse;
 import com.aleksey.booking.hotels.api.response.HotelResponse;
 import com.aleksey.booking.hotels.model.Hotel;
 import org.mapstruct.*;
@@ -21,5 +22,9 @@ public interface HotelMapper {
 
     default HotelListResponse hotelListToHotelListResponse(List<Hotel> hotels) {
         return new HotelListResponse(hotelListToResponseList(hotels));
+    }
+
+    default HotelPaginationResponse hotelListToHotelPaginationResponse(Long hotelsCount, List<Hotel> hotels) {
+        return new HotelPaginationResponse(hotelsCount, hotelListToResponseList(hotels));
     }
 }
