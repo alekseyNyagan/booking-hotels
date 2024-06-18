@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -39,6 +40,10 @@ public class Hotel {
 
     @Column(name = "marks_count")
     private Integer marksCount;
+
+    @OneToMany(mappedBy = "hotel")
+    @ToString.Exclude
+    private List<Room> rooms;
 
     @Override
     public final boolean equals(Object o) {

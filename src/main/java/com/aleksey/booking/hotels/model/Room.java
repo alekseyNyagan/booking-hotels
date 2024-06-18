@@ -44,6 +44,10 @@ public class Room {
     @ToString.Exclude
     private List<UnavailableDate> unavailableDates;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Hotel hotel;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

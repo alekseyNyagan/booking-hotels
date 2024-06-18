@@ -8,5 +8,5 @@ import java.util.List;
  * DTO for {@link com.aleksey.booking.hotels.model.Room}
  */
 public record RoomResponse(Long id, String name, String description, String number, Integer cost,
-                           Integer maxCountOfPeople, List<LocalDate> unavailableDates) implements Serializable {
+                           Integer maxCountOfPeople, List<LocalDate> unavailableDates, Long hotelId) implements Serializable {
 }

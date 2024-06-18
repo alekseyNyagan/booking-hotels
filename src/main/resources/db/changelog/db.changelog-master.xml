@@ -12,4 +12,5 @@
     <include file="/db/changelog/2024/05/add-user-table.xml"/>
     <include file="db/changelog/2024/05/add-booking-table.xml"/>
     <include file="db/changelog/2024/06/create-user-roles-table.xml"/>
+    <include file="/db/changelog/2024/06/add-hotel-room-relation.xml"/>
 </databaseChangeLog>

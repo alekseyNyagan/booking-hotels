@@ -2,6 +2,7 @@ package com.aleksey.booking.hotels.api.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.hibernate.validator.constraints.Range;
 
@@ -15,6 +16,7 @@ public record UpsertRoomRequest(@NotBlank(message = "Название комна
         , @NotBlank(message = "Номер комнаты должен быть заполнен!") String number
         , @PositiveOrZero(message = "Стоимость номера должны выше нуля!") Integer cost
         , @JsonProperty(value = "max_count_of_people")
-                                @Range(min = 1, max = 4, message = "Вместимость комнаты должна быть от 1 до 4 человек!") Integer maxCountOfPeople)
+                                @Range(min = 1, max = 4, message = "Вместимость комнаты должна быть от 1 до 4 человек!") Integer maxCountOfPeople
+        , @NotEmpty(message = "Id отеля должен быть заполнен!") Long hotelId)
         implements Serializable {
 }
