@@ -35,7 +35,7 @@ public class Room {
     @Column(name = "max_count_of_people")
     private Integer maxCountOfPeople;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "room2date"
             , joinColumns = @JoinColumn(name = "room_id")

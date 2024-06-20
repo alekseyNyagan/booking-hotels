@@ -10,6 +10,8 @@ import com.aleksey.booking.hotels.model.Room;
 import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
+import com.aleksey.booking.hotels.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,8 @@ public class BookingServiceImpl implements BookingService {
 
     private final RoomRepository roomRepository;
 
+    private final UserRepository userRepository;
+
     private final BookingMapper bookingMapper;
 
     @Override
@@ -37,7 +41,12 @@ public class BookingServiceImpl implements BookingService {
                 .anyMatch(localDate -> arrivalDate.datesUntil(departureDate).toList().contains(localDate))) {
             throw new RoomsUnavailableException("На данную дату, данные комнаты уже забронированы!");
         } else {
-            Booking booking = bookingMapper.toEntity(upsertBookingRequest, rooms);
+            Booking booking = bookingMapper.toEntity(userRepository.findById(upsertBookingRequest.userId()).orElseThrow(() ->
+                            new EntityNotFoundException("Пользователь с id " + upsertBookingRequest.userId() + " не найден!"))
+                    , rooms
+                    , arrivalDate
+                    , departureDate);
+            roomRepository.saveAll(booking.getRooms());
             bookingRepository.save(booking);
             return bookingMapper.toDto(booking);
         }

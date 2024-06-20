@@ -12,7 +12,7 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Override
-    @EntityGraph(attributePaths = {"rooms"})
+    @EntityGraph(attributePaths = {"rooms", "user"})
     @NonNull
     List<Booking> findAll();
 }
