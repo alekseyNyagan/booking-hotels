@@ -32,7 +32,7 @@ public class Booking {
     @ToString.Exclude
     private List<Room> rooms;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User user;

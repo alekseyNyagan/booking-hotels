@@ -13,4 +13,5 @@
     <include file="db/changelog/2024/05/add-booking-table.xml"/>
     <include file="db/changelog/2024/06/create-user-roles-table.xml"/>
     <include file="/db/changelog/2024/06/add-hotel-room-relation.xml"/>
+    <include file="db/changelog/2024/06/drop-unique-constraint-uc_booking_user.xml"/>
 </databaseChangeLog>
