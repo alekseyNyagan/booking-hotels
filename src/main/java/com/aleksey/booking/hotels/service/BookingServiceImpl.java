@@ -11,12 +11,12 @@ import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
 import com.aleksey.booking.hotels.repository.UserRepository;
+import com.aleksey.booking.hotels.utils.DateConverter;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -33,9 +33,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse createBooking(UpsertBookingRequest upsertBookingRequest) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate arrivalDate = LocalDate.parse(upsertBookingRequest.arrivalDate(), formatter);
-        LocalDate departureDate = LocalDate.parse(upsertBookingRequest.departureDate(), formatter);
+        LocalDate arrivalDate = DateConverter.fromStringDateToLocalDate(upsertBookingRequest.arrivalDate());
+        LocalDate departureDate = DateConverter.fromStringDateToLocalDate(upsertBookingRequest.departureDate());
         List<Room> rooms = roomRepository.findAllByIdIn(upsertBookingRequest.roomIds());
         if (rooms.stream().flatMap(room -> room.getUnavailableDates().stream().map(UnavailableDate::getDate))
                 .anyMatch(localDate -> arrivalDate.datesUntil(departureDate).toList().contains(localDate))) {

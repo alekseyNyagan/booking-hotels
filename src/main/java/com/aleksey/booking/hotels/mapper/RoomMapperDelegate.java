@@ -62,4 +62,9 @@ public abstract class RoomMapperDelegate implements RoomMapper {
                 , room.getMaxCountOfPeople()
                 , room.getHotel().getId())).toList();
     }
+
+    @Override
+    public List<RoomResponse> roomListToResponseList(List<Room> rooms) {
+        return rooms.stream().map(this::toDto).toList();
+    }
 }

@@ -1,6 +1,7 @@
 package com.aleksey.booking.hotels.mapper;
 
 import com.aleksey.booking.hotels.api.response.RoomInfo;
+import com.aleksey.booking.hotels.api.response.RoomPaginationResponse;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
 import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
 import com.aleksey.booking.hotels.model.Room;
@@ -25,4 +26,10 @@ public interface RoomMapper {
     }
 
     List<RoomInfo> roomListToRoomInfoList(List<Room> rooms);
+
+    List<RoomResponse> roomListToResponseList(List<Room> rooms);
+
+    default RoomPaginationResponse roomListToRoomPaginationResponse(Long roomsCount, List<Room> rooms) {
+        return new RoomPaginationResponse(roomsCount, roomListToResponseList(rooms));
+    }
 }

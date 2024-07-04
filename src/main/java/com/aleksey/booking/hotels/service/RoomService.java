@@ -1,6 +1,8 @@
 package com.aleksey.booking.hotels.service;
 
+import com.aleksey.booking.hotels.api.request.RoomFilter;
 import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
+import com.aleksey.booking.hotels.api.response.RoomPaginationResponse;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
 
 public interface RoomService {
@@ -12,4 +14,6 @@ public interface RoomService {
     RoomResponse updateRoom(Long id, UpsertRoomRequest upsertRoomRequest);
 
     void deleteRoom(Long id);
+
+    RoomPaginationResponse filterBy(RoomFilter filter);
 }

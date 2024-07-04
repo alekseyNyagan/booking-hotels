@@ -59,7 +59,7 @@ public class HotelController {
     }
 
     @GetMapping("/hotelPage")
-    public ResponseEntity<HotelPaginationResponse> hotelPage(HotelFilter filter) {
+    public ResponseEntity<HotelPaginationResponse> hotelPage(@RequestBody HotelFilter filter) {
         return ResponseEntity.ok(hotelService.filterBy(filter));
     }
 }

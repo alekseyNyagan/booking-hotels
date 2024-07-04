@@ -37,7 +37,7 @@ dependencies {
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
-	annotationProcessor("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok:1.18.34")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")

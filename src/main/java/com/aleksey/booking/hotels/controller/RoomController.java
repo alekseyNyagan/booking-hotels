@@ -1,6 +1,8 @@
 package com.aleksey.booking.hotels.controller;
 
+import com.aleksey.booking.hotels.api.request.RoomFilter;
 import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
+import com.aleksey.booking.hotels.api.response.RoomPaginationResponse;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
 import com.aleksey.booking.hotels.service.RoomService;
 import jakarta.validation.Valid;
@@ -40,5 +42,11 @@ public class RoomController {
     public ResponseEntity<Void> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/roomPage")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<RoomPaginationResponse> roomPage(RoomFilter filter) {
+        return ResponseEntity.ok(roomService.filterBy(filter));
     }
 }
