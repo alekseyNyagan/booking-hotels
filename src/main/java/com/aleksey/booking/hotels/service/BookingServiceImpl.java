@@ -1,6 +1,6 @@
 package com.aleksey.booking.hotels.service;
 
-import com.aleksey.booking.hotels.api.response.BookingListResponse;
+import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
 import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
 import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
@@ -14,6 +14,8 @@ import com.aleksey.booking.hotels.repository.UserRepository;
 import com.aleksey.booking.hotels.utils.DateConverter;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -52,7 +54,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingListResponse allBookings() {
-        return bookingMapper.bookingListToBookingListResponse(bookingRepository.findAll());
+    public BookingPaginationResponse getBookingPage(Integer pageSize, Integer pageNumber) {
+        Page<Booking> bookings = bookingRepository.findAll(PageRequest.of(pageNumber, pageSize));
+        return bookingMapper.bookingListToBookingPaginationResponse(bookings.getTotalElements(), bookings.getContent());
     }
 }

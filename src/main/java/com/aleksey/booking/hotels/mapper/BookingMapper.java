@@ -1,6 +1,6 @@
 package com.aleksey.booking.hotels.mapper;
 
-import com.aleksey.booking.hotels.api.response.BookingListResponse;
+import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
 import com.aleksey.booking.hotels.model.Booking;
 import com.aleksey.booking.hotels.model.Room;
@@ -19,7 +19,7 @@ public interface BookingMapper {
 
     List<BookingResponse> bookingListToResponseList(List<Booking> bookings);
 
-    default BookingListResponse bookingListToBookingListResponse(List<Booking> bookings) {
-        return new BookingListResponse(bookingListToResponseList(bookings));
+    default BookingPaginationResponse bookingListToBookingPaginationResponse(Long bookingsCount, List<Booking> bookings)  {
+        return new BookingPaginationResponse(bookingsCount, bookingListToResponseList(bookings));
     }
 }

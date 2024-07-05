@@ -1,7 +1,7 @@
 package com.aleksey.booking.hotels.controller;
 
 import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
-import com.aleksey.booking.hotels.api.response.BookingListResponse;
+import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
 import com.aleksey.booking.hotels.service.BookingService;
 import jakarta.validation.Valid;
@@ -24,9 +24,9 @@ public class BookingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(upsertBookingRequest));
     }
 
-    @GetMapping
+    @GetMapping("/bookingPage")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BookingListResponse> getBookings() {
-        return ResponseEntity.ok(bookingService.allBookings());
+    public ResponseEntity<BookingPaginationResponse> bookingPage(@RequestParam Integer pageSize, @RequestParam Integer pageNumber) {
+        return ResponseEntity.ok(bookingService.getBookingPage(pageSize, pageNumber));
     }
 }
