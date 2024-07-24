@@ -1,6 +1,7 @@
 package com.aleksey.booking.hotels.security.jwt;
 
 
+import com.aleksey.booking.hotels.config.JwtProperties;
 import com.aleksey.booking.hotels.security.AppUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -8,24 +9,20 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Date;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtUtils {
 
-    @Value("${app.jwt.secret}")
-    private String jwtSecret;
-
-    @Value("${app.jwt.tokenExpiration}")
-    private Duration tokenExpiration;
+    private final JwtProperties jwtProperties;
 
     public String generateJwtToken(AppUserDetails userDetails) {
         return generateTokenFromUsername(userDetails.getUsername());
@@ -35,14 +32,14 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime() + tokenExpiration.toMillis()))
-                .signWith(getSecretKeyFromJwtSecret(jwtSecret))
+                .expiration(new Date(new Date().getTime() + jwtProperties.getTokenExpiration().toMillis()))
+                .signWith(getSecretKeyFromJwtSecret(jwtProperties.getSecret()))
                 .compact();
     }
 
     public String getUsername(String token) {
         return Jwts.parser()
-                .verifyWith(getSecretKeyFromJwtSecret(jwtSecret))
+                .verifyWith(getSecretKeyFromJwtSecret(jwtProperties.getSecret()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
@@ -52,7 +49,7 @@ public class JwtUtils {
     public boolean validate(String authToken) {
         try {
             Jwts.parser()
-                    .verifyWith(getSecretKeyFromJwtSecret(jwtSecret))
+                    .verifyWith(getSecretKeyFromJwtSecret(jwtProperties.getSecret()))
                     .build()
                     .parseSignedClaims(authToken);
             return true;

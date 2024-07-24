@@ -3,21 +3,22 @@ version: "3.8"
 services:
   app:
     build:
-      context: .
-    container_name: app
-    depends_on:
-      - postgres
-      - redis
+      context: ./booking-hotels-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
     ports:
       - "8080:8080"
+
+  config-server:
+    build:
+      context: ./config-server
+    container_name: config-server
+    ports:
+      - "8071:8071"
     environment:
-      - DB_HOST=jdbc:postgresql
-      - DB_PORT=postgres:5432
-      - SCHEMA_NAME=booking_hotels
-      - DB_USERNAME=postgres
-      - DB_USER_PASSWORD=postgres
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      - SPRING_PROFILES_ACTIVE=native
+      - ENCRYPT_KEY=IMSYMMETRIC
 
   postgres:
     image: postgres:16.3
@@ -28,6 +29,7 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
+
   redis:
     image: redis
     ports:

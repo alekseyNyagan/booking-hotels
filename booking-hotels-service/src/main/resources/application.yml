@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: booking-hotels
+  config:
+    import: ${SPRING_CONFIG_IMPORT:http://localhost:8071}

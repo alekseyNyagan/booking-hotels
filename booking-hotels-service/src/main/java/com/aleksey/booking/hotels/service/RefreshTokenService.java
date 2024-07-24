@@ -1,13 +1,12 @@
 package com.aleksey.booking.hotels.service;
 
+import com.aleksey.booking.hotels.config.JwtProperties;
 import com.aleksey.booking.hotels.exception.RefreshTokenException;
 import com.aleksey.booking.hotels.model.RefreshToken;
 import com.aleksey.booking.hotels.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,10 +15,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
-    @Value("${app.jwt.refreshTokenExpiration}")
-    private Duration refreshTokenExpiration;
-
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private final JwtProperties jwtProperties;
 
     public Optional<RefreshToken> findByRefreshToken(String token) {
         return refreshTokenRepository.findByToken(token);
@@ -28,7 +26,7 @@ public class RefreshTokenService {
     public RefreshToken createRefreshToken(Long userId) {
         var refreshToken = RefreshToken.builder()
                 .userId(userId)
-                .expiryDate(Instant.now().plusMillis(refreshTokenExpiration.toMillis()))
+                .expiryDate(Instant.now().plusMillis(jwtProperties.getRefreshTokenExpiration().toMillis()))
                 .token(UUID.randomUUID().toString())
                 .build();
 

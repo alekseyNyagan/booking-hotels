@@ -1,7 +1,7 @@
 package com.aleksey.booking.hotels.config;
 
 import com.aleksey.booking.hotels.model.RefreshToken;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,16 +12,15 @@ import org.springframework.data.redis.core.convert.KeyspaceConfiguration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.lang.NonNull;
 
-import java.time.Duration;
 import java.util.Collections;
 
 @Configuration
 @EnableRedisRepositories(keyspaceConfiguration = RedisConfig.RefreshTokenKeyspaceConfiguration.class,
 enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP)
+@RequiredArgsConstructor
 public class RedisConfig {
 
-    @Value("${app.jwt.refreshTokenExpiration}")
-    private Duration refreshTokenExpiration;
+    private final JwtProperties jwtProperties;
 
     @Bean
     public JedisConnectionFactory jedisConnectionFactory(RedisProperties redisProperties) {
@@ -41,7 +40,7 @@ public class RedisConfig {
         protected @NonNull Iterable<KeyspaceSettings> initialConfiguration() {
             KeyspaceSettings keyspaceSettings = new KeyspaceSettings(RefreshToken.class, REFRESH_TOKEN_KEYSPACE);
 
-            keyspaceSettings.setTimeToLive(refreshTokenExpiration.getSeconds());
+            keyspaceSettings.setTimeToLive(jwtProperties.getRefreshTokenExpiration().getSeconds());
 
             return Collections.singleton(keyspaceSettings);
         }
