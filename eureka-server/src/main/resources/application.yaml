@@ -1,5 +1,5 @@
 spring:
   application:
-    name: booking-hotels-service
+    name: eureka-server
   config:
     import: ${SPRING_CONFIG_IMPORT:http://localhost:8071}

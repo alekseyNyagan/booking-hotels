@@ -32,6 +32,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.kafka:spring-kafka:3.2.2")
     implementation("org.springframework.cloud:spring-cloud-starter-config:4.1.3")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.1.3")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("redis.clients:jedis:5.1.3")
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")

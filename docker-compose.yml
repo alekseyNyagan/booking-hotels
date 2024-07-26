@@ -20,6 +20,15 @@ services:
       - SPRING_PROFILES_ACTIVE=native
       - ENCRYPT_KEY=IMSYMMETRIC
 
+  eureka-server:
+    build:
+      context: ./eureka-server
+    ports:
+      - "8070:8070"
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
+
   postgres:
     image: postgres:16.3
     container_name: postgres

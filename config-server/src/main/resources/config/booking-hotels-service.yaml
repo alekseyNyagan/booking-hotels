@@ -1,4 +1,3 @@
-spring.application.name: booking.hotels
 spring:
   data:
     redis:
@@ -22,3 +21,12 @@ app:
     secret: "my-32-character-ultra-secure-and-ultra-long-secret"
     tokenExpiration: 3m
     refreshTokenExpiration: 30m
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://eureka-server:8070/eureka/
