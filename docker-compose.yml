@@ -29,6 +29,14 @@ services:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
 
+  gateway-server:
+    build: ./gateway-server
+    ports:
+      - "8072:8072"
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
+
   postgres:
     image: postgres:16.3
     container_name: postgres
