@@ -2,9 +2,7 @@ package com.aleksey.booking.hotels.controller;
 
 import com.aleksey.booking.hotels.api.response.ErrorResponse;
 import com.aleksey.booking.hotels.exception.AlreadyExistsException;
-import com.aleksey.booking.hotels.exception.RefreshTokenException;
 import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
-import com.aleksey.booking.hotels.exception.UserExistException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -40,19 +38,9 @@ public class ExceptionHandlerController {
                 .body(new ErrorResponse(errorMessage));
     }
 
-    @ExceptionHandler(UserExistException.class)
-    public ResponseEntity<ErrorResponse> userExist(UserExistException ex) {
-        return buildResponse(HttpStatus.CONFLICT, ex);
-    }
-
     @ExceptionHandler(RoomsUnavailableException.class)
     public ResponseEntity<ErrorResponse> roomsUnavailable(RoomsUnavailableException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex);
-    }
-
-    @ExceptionHandler(RefreshTokenException.class)
-    public ResponseEntity<ErrorResponse> refreshToken(RefreshTokenException ex) {
-        return buildResponse(HttpStatus.FORBIDDEN, ex);
     }
 
     @ExceptionHandler(AlreadyExistsException.class)

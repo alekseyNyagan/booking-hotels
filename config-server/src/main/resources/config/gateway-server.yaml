@@ -11,6 +11,18 @@ eureka:
 spring:
   cloud:
     gateway:
-      discovery.locator:
-        enabled: true
-        lowerCaseServiceId: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user/**
+          filters:
+            - RewritePath=/user/(?<path>.*), /$\{path}
+            - RemoveRequestHeader=Cookie, Set-Cookie
+        - id: booking-hotels-service
+          uri: lb://booking-hotels-service
+          predicates:
+            - Path=/booking-hotels/**
+          filters:
+              - RewritePath=/booking-hotels/(?<path>.*), /$\{path}
+              - RemoveRequestHeader=Cookie, Set-Cookie

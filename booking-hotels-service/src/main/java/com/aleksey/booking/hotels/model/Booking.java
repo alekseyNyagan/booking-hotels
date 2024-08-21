@@ -7,6 +7,7 @@ import org.hibernate.proxy.HibernateProxy;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -27,15 +28,13 @@ public class Booking {
     @Column(name = "departure_date")
     private LocalDate departureDate;
 
+    @Column(name = "user_id")
+    private UUID userId;
+
     @OneToMany
     @JoinColumn(name = "booking_id")
     @ToString.Exclude
     private List<Room> rooms;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @ToString.Exclude
-    private User user;
 
     @Override
     public final boolean equals(Object o) {

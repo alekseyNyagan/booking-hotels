@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ResponseFilter {
 
-    FilterUtils filterUtils;
+    private final FilterUtils filterUtils;
 
     @Bean
     public GlobalFilter postGlobalFilter() {

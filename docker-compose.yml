@@ -1,14 +1,25 @@
 version: "3.8"
 
 services:
-  app:
+  booking-hotels-service:
     build:
       context: ./booking-hotels-service
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
+      - EUREKA_HOST=eureka-server
+      - POSTGRES_HOST=postgres
     ports:
-      - "8080:8080"
+      - "8180:8180"
+
+  user-service:
+    build:
+      context: ./user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
+    ports:
+      - "8073:8073"
 
   config-server:
     build:
@@ -47,7 +58,37 @@ services:
     ports:
       - "5432:5432"
 
-  redis:
-    image: redis
+  keycloak:
+    image: keycloak/keycloak
+    container_name: keycloak
+    command: start-dev --import-realm
     ports:
-      - "6379:6379"
+      - "8080:8080"
+    environment:
+      KC_DB: postgres
+      KC_DB_SCHEMA: public
+      KC_DB_URL_HOST: keycloak-postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: keycloakdb
+      KC_DB_USERNAME: keycloakuser
+      KC_DB_PASSWORD: keycloakpass
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: adminpass
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
+
+  keycloak-postgres:
+    image: postgres:16.3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    container_name: keycloak-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: keycloakdb
+      POSTGRES_USER: keycloakuser
+      POSTGRES_PASSWORD: keycloakpass
+
+volumes:
+  postgres_data:
+    driver: local

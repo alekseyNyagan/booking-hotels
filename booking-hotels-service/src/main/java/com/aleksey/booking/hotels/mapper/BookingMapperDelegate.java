@@ -4,22 +4,19 @@ import com.aleksey.booking.hotels.api.response.BookingResponse;
 import com.aleksey.booking.hotels.model.Booking;
 import com.aleksey.booking.hotels.model.Room;
 import com.aleksey.booking.hotels.model.UnavailableDate;
-import com.aleksey.booking.hotels.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class BookingMapperDelegate implements BookingMapper {
 
     @Autowired
     private RoomMapper roomMapper;
 
-    @Autowired
-    private UserMapper userMapper;
-
     @Override
-    public Booking toEntity(User user, List<Room> rooms, LocalDate arrivalDate, LocalDate departureDate) {
+    public Booking toEntity(UUID userId, List<Room> rooms, LocalDate arrivalDate, LocalDate departureDate) {
         List<UnavailableDate> unavailableDates = arrivalDate.datesUntil(departureDate).map(localDate -> {
             UnavailableDate unavailableDate = new UnavailableDate();
             unavailableDate.setDate(localDate);
@@ -30,7 +27,7 @@ public abstract class BookingMapperDelegate implements BookingMapper {
         booking.setArrivalDate(arrivalDate);
         booking.setDepartureDate(departureDate);
         booking.setRooms(rooms);
-        booking.setUser(user);
+        booking.setUserId(userId);
         return booking;
     }
 
@@ -41,7 +38,7 @@ public abstract class BookingMapperDelegate implements BookingMapper {
                 , booking.getArrivalDate()
                 , booking.getDepartureDate()
                 , roomMapper.roomListToRoomInfoList(booking.getRooms())
-                , userMapper.toDto(booking.getUser()));
+                , booking.getUserId());
     }
 
     @Override

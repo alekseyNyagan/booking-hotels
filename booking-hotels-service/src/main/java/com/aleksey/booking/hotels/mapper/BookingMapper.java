@@ -4,16 +4,16 @@ import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
 import com.aleksey.booking.hotels.model.Booking;
 import com.aleksey.booking.hotels.model.Room;
-import com.aleksey.booking.hotels.model.User;
 import org.mapstruct.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @DecoratedWith(BookingMapperDelegate.class)
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BookingMapper {
-    Booking toEntity(User user, List<Room> rooms, LocalDate arrivalDate, LocalDate departureDate);
+    Booking toEntity(UUID userId, List<Room> rooms, LocalDate arrivalDate, LocalDate departureDate);
 
     BookingResponse toDto(Booking booking);
 

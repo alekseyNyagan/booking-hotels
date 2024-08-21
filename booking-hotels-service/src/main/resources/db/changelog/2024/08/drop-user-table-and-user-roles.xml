@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1724052266379-3" author="aleksey">
+        <dropForeignKeyConstraint baseTableName="booking" constraintName="fk_booking_on_user"/>
+    </changeSet>
+    <changeSet id="1724052266379-4" author="aleksey">
+        <dropForeignKeyConstraint baseTableName="user_roles" constraintName="fk_user_roles_on_user"/>
+    </changeSet>
+    <changeSet id="1724052266379-5" author="aleksey">
+        <dropTable cascadeConstraints="true" tableName="user_roles"/>
+    </changeSet>
+    <changeSet id="1724052266379-6" author="aleksey">
+        <dropTable cascadeConstraints="true" tableName="user_table"/>
+    </changeSet>
+    <changeSet id="1724052266379-1" author="aleksey">
+        <dropColumn columnName="user_id" tableName="booking"/>
+    </changeSet>
+    <changeSet id="1724052266379-2" author="aleksey">
+        <addColumn tableName="booking">
+            <column name="user_id" type="UUID"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

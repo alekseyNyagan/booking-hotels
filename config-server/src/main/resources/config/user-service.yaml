@@ -1,0 +1,32 @@
+keycloak:
+  server-url: http://keycloak:8080
+  realm: booking-hotels-realm
+  username: admin
+  password: adminpass
+  auth-server-url: http://keycloak:8080/auth
+  ssl-required: external
+  resource: booking-hotels
+  credentials:
+    secret: TrPS1K8XeHm5Ii8p0oPIhGb0KyEJadBv
+  use-resource-role-mappings: true
+  bearer-only: true
+server:
+  port: 8073
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://eureka-server:8070/eureka/
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/booking-hotels-realm
+          jwk-set-uri: http://keycloak:8080/realms/booking-hotels-realm/protocol/openid-connect/certs
+logging:
+  level:
+    org.springframework.security: DEBUG

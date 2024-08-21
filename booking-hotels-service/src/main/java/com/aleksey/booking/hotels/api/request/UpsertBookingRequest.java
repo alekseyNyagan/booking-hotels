@@ -13,6 +13,5 @@ import java.util.List;
 public record UpsertBookingRequest(
         @JsonProperty("arrival_date") @NotBlank(message = "Дата прибытия должна быть указана!") String arrivalDate
         , @JsonProperty("departure_date") @NotBlank(message = "Дата отбытия должна быть указана!") String departureDate
-        , @JsonProperty("room_ids") @NotEmpty(message = "Должна быть указана хотя бы одна комната!") List<Long> roomIds
-        , @JsonProperty("user_id") Long userId) implements Serializable {
+        , @JsonProperty("room_ids") @NotEmpty(message = "Должна быть указана хотя бы одна комната!") List<Long> roomIds) implements Serializable {
 }

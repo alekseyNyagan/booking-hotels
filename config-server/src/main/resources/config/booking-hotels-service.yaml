@@ -1,10 +1,6 @@
 spring:
-  data:
-    redis:
-      host: redis
-      port: 6379
   datasource:
-    url: jdbc:postgresql://postgres:5432/booking_hotels
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/booking_hotels
     username: postgres
     password: postgres
   jpa:
@@ -15,12 +11,12 @@ spring:
     open-in-view: false
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
-
-app:
-  jwt:
-    secret: "my-32-character-ultra-secure-and-ultra-long-secret"
-    tokenExpiration: 3m
-    refreshTokenExpiration: 30m
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/booking-hotels-realm
+          jwk-set-uri: http://keycloak:8080/realms/booking-hotels-realm/protocol/openid-connect/certs
 
 eureka:
   instance:
@@ -29,4 +25,13 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://eureka-server:8070/eureka/
+      defaultZone: http://${EUREKA_HOST:localhost}:8070/eureka/
+
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE
+
+server:
+  port: 8180

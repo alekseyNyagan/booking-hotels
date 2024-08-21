@@ -10,16 +10,16 @@ import com.aleksey.booking.hotels.model.Room;
 import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
-import com.aleksey.booking.hotels.repository.UserRepository;
 import com.aleksey.booking.hotels.utils.DateConverter;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,12 +29,10 @@ public class BookingServiceImpl implements BookingService {
 
     private final RoomRepository roomRepository;
 
-    private final UserRepository userRepository;
-
     private final BookingMapper bookingMapper;
 
     @Override
-    public BookingResponse createBooking(UpsertBookingRequest upsertBookingRequest) {
+    public BookingResponse createBooking(UpsertBookingRequest upsertBookingRequest, Jwt jwt) {
         LocalDate arrivalDate = DateConverter.fromStringDateToLocalDate(upsertBookingRequest.arrivalDate());
         LocalDate departureDate = DateConverter.fromStringDateToLocalDate(upsertBookingRequest.departureDate());
         List<Room> rooms = roomRepository.findAllByIdIn(upsertBookingRequest.roomIds());
@@ -42,8 +40,7 @@ public class BookingServiceImpl implements BookingService {
                 .anyMatch(localDate -> arrivalDate.datesUntil(departureDate).toList().contains(localDate))) {
             throw new RoomsUnavailableException("На данную дату, данные комнаты уже забронированы!");
         } else {
-            Booking booking = bookingMapper.toEntity(userRepository.findById(upsertBookingRequest.userId()).orElseThrow(() ->
-                            new EntityNotFoundException("Пользователь с id " + upsertBookingRequest.userId() + " не найден!"))
+            Booking booking = bookingMapper.toEntity(UUID.fromString(jwt.getClaim("sub"))
                     , rooms
                     , arrivalDate
                     , departureDate);
