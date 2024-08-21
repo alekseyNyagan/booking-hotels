@@ -7,7 +7,7 @@ import org.springframework.web.server.ServerWebExchange;
 @Component
 public class FilterUtils {
     public static final String CORRELATION_ID = "tmx-correlation-id";
-    public static final String AUTH_TOKEN = "tmx-auth-token";
+    public static final String AUTH_TOKEN = "Authorization";
     public static final String USER_ID = "tmx-user-id";
     public static final String ORG_ID = "tmx-org-id";
     public static final String PRE_FILTER_TYPE = "pre";
@@ -28,5 +28,9 @@ public class FilterUtils {
 
     public ServerWebExchange setCorrelationId(ServerWebExchange exchange, String correlationId) {
         return this.setRequestHeader(exchange, CORRELATION_ID, correlationId);
+    }
+
+    public String getAuthToken(HttpHeaders requestHeaders) {
+        return requestHeaders.getFirst(AUTH_TOKEN);
     }
 }
