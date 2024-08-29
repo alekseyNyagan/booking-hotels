@@ -24,5 +24,12 @@ spring:
           predicates:
             - Path=/booking-hotels/**
           filters:
-              - RewritePath=/booking-hotels/(?<path>.*), /$\{path}
-              - RemoveRequestHeader=Cookie, Set-Cookie
+            - RewritePath=/booking-hotels/(?<path>.*), /$\{path}
+            - RemoveRequestHeader=Cookie, Set-Cookie
+        - id: statistic-service
+          uri: lb://statistic-service
+          predicates:
+            - Path=/statistic/**
+          filters:
+            - RewritePath=/statistic/(?<path>.*), /$\{path}
+            - RemoveRequestHeader=Cookie, Set-Cookie

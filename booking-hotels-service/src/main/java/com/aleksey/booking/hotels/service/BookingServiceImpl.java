@@ -3,6 +3,7 @@ package com.aleksey.booking.hotels.service;
 import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
 import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
+import com.aleksey.booking.hotels.kafka.model.StatisticModel;
 import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
 import com.aleksey.booking.hotels.mapper.BookingMapper;
 import com.aleksey.booking.hotels.model.Booking;
@@ -11,11 +12,17 @@ import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
 import com.aleksey.booking.hotels.utils.DateConverter;
+import com.aleksey.booking.hotels.utils.UserContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,6 +30,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@EnableTransactionManagement
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -31,7 +39,10 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingMapper bookingMapper;
 
+    private final StreamBridge streamBridge;
+
     @Override
+    @Transactional
     public BookingResponse createBooking(UpsertBookingRequest upsertBookingRequest, Jwt jwt) {
         LocalDate arrivalDate = DateConverter.fromStringDateToLocalDate(upsertBookingRequest.arrivalDate());
         LocalDate departureDate = DateConverter.fromStringDateToLocalDate(upsertBookingRequest.departureDate());
@@ -40,12 +51,16 @@ public class BookingServiceImpl implements BookingService {
                 .anyMatch(localDate -> arrivalDate.datesUntil(departureDate).toList().contains(localDate))) {
             throw new RoomsUnavailableException("На данную дату, данные комнаты уже забронированы!");
         } else {
-            Booking booking = bookingMapper.toEntity(UUID.fromString(jwt.getClaim("sub"))
+            UUID userId = UUID.fromString(jwt.getSubject());
+            Booking booking = bookingMapper.toEntity(userId
                     , rooms
                     , arrivalDate
                     , departureDate);
             roomRepository.saveAll(booking.getRooms());
             bookingRepository.save(booking);
+            Message<StatisticModel> message = MessageBuilder.withPayload(
+                    new StatisticModel(userId, arrivalDate, departureDate, UserContext.getCorrelationId())).build();
+            streamBridge.send("producer-out-0", message);
             return bookingMapper.toDto(booking);
         }
     }

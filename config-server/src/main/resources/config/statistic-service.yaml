@@ -1,0 +1,35 @@
+spring:
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
+      database: statistic
+      username: admin
+      password: password
+      authentication-database: admin
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/booking-hotels-realm
+          jwk-set-uri: http://keycloak:8080/realms/booking-hotels-realm/protocol/openid-connect/certs
+  cloud:
+    function:
+      definition: consumer
+    stream:
+      kafka:
+        binder:
+          brokers: kafka:9092
+      bindings:
+        consumer-in-0:
+          destination: statistic
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST:localhost}:8070/eureka/
+server:
+  port: 8181

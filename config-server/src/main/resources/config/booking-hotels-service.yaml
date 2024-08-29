@@ -17,7 +17,16 @@ spring:
         jwt:
           issuer-uri: http://keycloak:8080/realms/booking-hotels-realm
           jwk-set-uri: http://keycloak:8080/realms/booking-hotels-realm/protocol/openid-connect/certs
-
+  cloud:
+    stream:
+      output-bindings: producer
+      bindings:
+        producer-out-0:
+          destination: statistic
+      kafka:
+        binder:
+          transactionIdPrefix: statistic-
+          brokers: kafka:9092
 eureka:
   instance:
     preferIpAddress: true
@@ -26,12 +35,10 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://${EUREKA_HOST:localhost}:8070/eureka/
-
 logging:
   level:
     org:
       springframework:
         security: TRACE
-
 server:
   port: 8180
