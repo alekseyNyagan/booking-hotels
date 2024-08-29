@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.3.2"
+    id("org.springframework.boot") version "3.3.3"
     id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -35,12 +35,12 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
-    implementation("org.springframework.boot:spring-boot-jarmode-layertools:3.2.8")
+    implementation("org.springframework.boot:spring-boot-jarmode-layertools:3.2.9")
     implementation("org.springframework.cloud:spring-cloud-stream")
     implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
     compileOnly("org.projectlombok:lombok")
     compileOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:postgresql:42.7.4")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

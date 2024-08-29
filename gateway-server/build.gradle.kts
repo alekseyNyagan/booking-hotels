@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.2"
+	id("org.springframework.boot") version "3.3.3"
 	id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -24,12 +24,12 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-	implementation("commons-codec:commons-codec")
+	implementation("commons-codec:commons-codec:1.17.1")
 	implementation("org.json:json:20240303")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.0")
 }
 
 dependencyManagement {
