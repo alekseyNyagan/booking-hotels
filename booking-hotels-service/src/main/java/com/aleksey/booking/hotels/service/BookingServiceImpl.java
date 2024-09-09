@@ -1,5 +1,7 @@
 package com.aleksey.booking.hotels.service;
 
+import brave.ScopedSpan;
+import brave.Tracer;
 import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
 import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
@@ -41,6 +43,8 @@ public class BookingServiceImpl implements BookingService {
 
     private final StreamBridge streamBridge;
 
+    private final Tracer tracer;
+
     @Override
     @Transactional
     public BookingResponse createBooking(UpsertBookingRequest upsertBookingRequest, Jwt jwt) {
@@ -52,6 +56,7 @@ public class BookingServiceImpl implements BookingService {
             throw new RoomsUnavailableException("На данную дату, данные комнаты уже забронированы!");
         } else {
             UUID userId = UUID.fromString(jwt.getSubject());
+            ScopedSpan createBooking = tracer.startScopedSpan("createBooking");
             Booking booking = bookingMapper.toEntity(userId
                     , rooms
                     , arrivalDate
@@ -61,6 +66,9 @@ public class BookingServiceImpl implements BookingService {
             Message<StatisticModel> message = MessageBuilder.withPayload(
                     new StatisticModel(userId, arrivalDate, departureDate, UserContext.getCorrelationId())).build();
             streamBridge.send("producer-out-0", message);
+            createBooking.tag("peer.service", "createBooking");
+            createBooking.annotate("Client received");
+            createBooking.finish();
             return bookingMapper.toDto(booking);
         }
     }
