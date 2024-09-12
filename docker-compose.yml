@@ -173,9 +173,32 @@ services:
       - STORAGE_TYPE=elasticsearch
       - "ES_HOSTS=elasticsearch:9300"
 
+  prometheus:
+    image: prom/prometheus:latest
+    restart: "no"
+    command:
+      - "--web.enable-lifecycle"
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: "no"
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: true
+
 volumes:
   postgres_data:
     driver: local
   mongodb_data:
   esdata1:
     driver: local
+  prometheus_data:

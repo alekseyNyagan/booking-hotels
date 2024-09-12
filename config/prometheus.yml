@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+scrape_configs:
+  - job_name: 'booking-hotels-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['booking-hotels-service:8180']
+    basic_auth:
+      username: 'prometheus'
+      password: 'prometheus'
+  - job_name: 'statistics-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['statistics-service:8181']
+    basic_auth:
+      username: 'prometheus'
+      password: 'prometheus'
+  - job_name: 'user-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['user-service:8073']
+    basic_auth:
+      username: 'prometheus'
+      password: 'prometheus'

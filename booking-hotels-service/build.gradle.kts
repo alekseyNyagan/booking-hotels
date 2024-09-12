@@ -41,6 +41,7 @@ dependencies {
     implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.3")
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.4.0")
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.13.4")
     compileOnly("org.projectlombok:lombok")
     compileOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql:42.7.4")

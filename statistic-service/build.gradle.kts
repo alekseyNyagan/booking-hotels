@@ -39,6 +39,7 @@ dependencies {
 	implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.4.0")
 	implementation("com.opencsv:opencsv:5.9")
 	implementation("net.logstash.logback:logstash-logback-encoder:8.0")
+	implementation("io.micrometer:micrometer-registry-prometheus:1.13.4")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
