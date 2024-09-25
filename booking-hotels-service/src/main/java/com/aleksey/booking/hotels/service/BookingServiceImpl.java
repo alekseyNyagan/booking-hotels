@@ -61,7 +61,6 @@ public class BookingServiceImpl implements BookingService {
                     , rooms
                     , arrivalDate
                     , departureDate);
-            roomRepository.saveAll(booking.getRooms());
             bookingRepository.save(booking);
             Message<StatisticModel> message = MessageBuilder.withPayload(
                     new StatisticModel(userId, arrivalDate, departureDate, UserContext.getCorrelationId())).build();

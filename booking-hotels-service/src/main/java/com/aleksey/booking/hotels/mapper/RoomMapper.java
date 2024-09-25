@@ -10,6 +10,8 @@ import org.mapstruct.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @DecoratedWith(RoomMapperDelegate.class)
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
@@ -21,8 +23,8 @@ public interface RoomMapper {
 
     RoomResponse toDto(Room room);
 
-    default List<LocalDate> fromUnavailableDatesToLocalDates(List<UnavailableDate> dates) {
-        return dates.stream().map(UnavailableDate::getDate).toList();
+    default Set<LocalDate> fromUnavailableDatesToLocalDates(Set<UnavailableDate> dates) {
+        return dates.stream().map(UnavailableDate::getDate).collect(Collectors.toSet());
     }
 
     List<RoomInfo> roomListToRoomInfoList(List<Room> rooms);

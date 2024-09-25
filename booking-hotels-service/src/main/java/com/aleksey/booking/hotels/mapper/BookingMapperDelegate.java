@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public abstract class BookingMapperDelegate implements BookingMapper {
 
@@ -17,12 +19,12 @@ public abstract class BookingMapperDelegate implements BookingMapper {
 
     @Override
     public Booking toEntity(UUID userId, List<Room> rooms, LocalDate arrivalDate, LocalDate departureDate) {
-        List<UnavailableDate> unavailableDates = arrivalDate.datesUntil(departureDate).map(localDate -> {
+        Set<UnavailableDate> unavailableDates = arrivalDate.datesUntil(departureDate).map(localDate -> {
             UnavailableDate unavailableDate = new UnavailableDate();
             unavailableDate.setDate(localDate);
             return unavailableDate;
-        }).toList();
-        rooms.forEach(room -> room.getUnavailableDates().addAll(unavailableDates));
+        }).collect(Collectors.toSet());
+        rooms.forEach(room -> room.addUnavailableDates(unavailableDates));
         Booking booking = new Booking();
         booking.setArrivalDate(arrivalDate);
         booking.setDepartureDate(departureDate);

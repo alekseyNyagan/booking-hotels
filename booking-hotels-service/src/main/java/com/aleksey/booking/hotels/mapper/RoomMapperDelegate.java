@@ -8,7 +8,7 @@ import com.aleksey.booking.hotels.repository.HotelRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public abstract class RoomMapperDelegate implements RoomMapper {
@@ -24,7 +24,7 @@ public abstract class RoomMapperDelegate implements RoomMapper {
         room.setNumber(upsertRoomRequest.number());
         room.setDescription(upsertRoomRequest.description());
         room.setMaxCountOfPeople(upsertRoomRequest.maxCountOfPeople());
-        room.setUnavailableDates(new ArrayList<>());
+        room.setUnavailableDates(new HashSet<>());
         room.setHotel(hotelRepository.findById(upsertRoomRequest.hotelId()).orElseThrow(() ->
                 new EntityNotFoundException("Отель с id " + upsertRoomRequest.hotelId() + " не найден!")));
         return room;

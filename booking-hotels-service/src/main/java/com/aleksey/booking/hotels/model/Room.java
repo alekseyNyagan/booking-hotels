@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -42,11 +42,15 @@ public class Room {
             , inverseJoinColumns = @JoinColumn(name = "date_id")
     )
     @ToString.Exclude
-    private List<UnavailableDate> unavailableDates;
+    private Set<UnavailableDate> unavailableDates;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private Hotel hotel;
+
+    public void addUnavailableDates(Set<UnavailableDate> unavailableDates) {
+        this.unavailableDates.addAll(unavailableDates);
+    }
 
     @Override
     public final boolean equals(Object o) {
