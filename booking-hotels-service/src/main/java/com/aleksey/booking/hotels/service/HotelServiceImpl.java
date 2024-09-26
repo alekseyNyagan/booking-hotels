@@ -38,8 +38,7 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public HotelResponse findById(Long id) {
         Optional<Hotel> hotel = hotelRepository.findById(id);
-        hotel.orElseThrow(() -> new EntityNotFoundException("Отель не найден!"));
-        return hotelMapper.toDto(hotel.get());
+        return hotelMapper.toDto(hotel.orElseThrow(() -> new EntityNotFoundException("Отель не найден!")));
     }
 
     @Override

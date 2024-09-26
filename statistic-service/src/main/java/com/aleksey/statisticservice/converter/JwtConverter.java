@@ -20,11 +20,11 @@ import java.util.stream.Stream;
 @Component
 public class JwtConverter implements Converter<Jwt, JwtAuthenticationToken> {
 
-    private final static String KEYCLOAK_RESOURCE_ACCESS = "resource_access";
-    private final static String RESOURCE_ID = "booking-hotels";
-    private final static String KEYCLOAK_ROLES = "roles";
-    private final static String KEYCLOAK_ROLE_PREFIX = "ROLE_";
-    private final static String PRINCIPAL_ATTRIBUTE = "preferred_username";
+    private static final String KEYCLOAK_RESOURCE_ACCESS = "resource_access";
+    private static final String RESOURCE_ID = "booking-hotels";
+    private static final String KEYCLOAK_ROLES = "roles";
+    private static final String KEYCLOAK_ROLE_PREFIX = "ROLE_";
+    private static final String PRINCIPAL_ATTRIBUTE = "preferred_username";
 
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 

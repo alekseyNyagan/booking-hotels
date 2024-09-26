@@ -27,5 +27,5 @@ public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificat
     @EntityGraph(attributePaths = {"unavailableDates"})
     @NonNull
     @Override
-    Page<Room> findAll(@NonNull Specification<Room> specification, @NonNull Pageable pageable);
+    Page<Room> findAll(Specification<Room> specification, @NonNull Pageable pageable);
 }

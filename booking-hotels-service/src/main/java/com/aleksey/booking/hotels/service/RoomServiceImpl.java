@@ -28,8 +28,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomResponse getById(Long id) {
         Optional<Room> room = roomRepository.findById(id);
-        room.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Комната с id {0} не найдена", id)));
-        return roomMapper.toDto(room.get());
+        return roomMapper.toDto(room.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Комната с id {0} не найдена", id))));
     }
 
     @Override

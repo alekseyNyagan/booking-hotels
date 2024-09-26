@@ -33,7 +33,7 @@ public class TrackingFilter implements GlobalFilter {
             log.debug("tmx-correlation-id generated in tracking filter {}.", correlationId);
         }
 
-        System.out.println("The authentication name from the token is : " + getUsername(headers));
+        log.info("The authentication name from the token is : {}", getUsername(headers));
 
         return chain.filter(exchange);
     }
@@ -60,9 +60,9 @@ public class TrackingFilter implements GlobalFilter {
         return username;
     }
 
-    private JSONObject decodeJWT(String JWTToken) {
-        String[] split_string = JWTToken.split("\\.");
-        String base64EncodedBody = split_string[1];
+    private JSONObject decodeJWT(String jwtToken) {
+        String[] splitString = jwtToken.split("\\.");
+        String base64EncodedBody = splitString[1];
         Base64 base64Url = new Base64(true);
         String body = new String(base64Url.decode(base64EncodedBody));
         return new JSONObject(body);

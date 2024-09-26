@@ -2,7 +2,7 @@ package com.aleksey.statisticservice.service;
 
 import com.aleksey.statisticservice.model.Statistic;
 import com.aleksey.statisticservice.repository.StatisticRepository;
-import com.opencsv.CSVWriter;
+import com.opencsv.ICSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -23,8 +23,8 @@ public class StatisticService {
         List<Statistic> statistic = statisticRepository.findAll();
         StringWriter stringWriter = new StringWriter();
         StatefulBeanToCsv<Statistic> writer = new StatefulBeanToCsvBuilder<Statistic>(stringWriter)
-                .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withQuotechar(ICSVWriter.NO_QUOTE_CHARACTER)
+                .withSeparator(ICSVWriter.DEFAULT_SEPARATOR)
                 .withOrderedResults(false)
                 .build();
 
