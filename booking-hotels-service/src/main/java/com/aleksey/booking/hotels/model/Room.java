@@ -46,7 +46,13 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JoinColumn(name = "hotel_id")
     private Hotel hotel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id")
+    @ToString.Exclude
+    private Booking booking;
 
     public void addUnavailableDates(Set<UnavailableDate> unavailableDates) {
         this.unavailableDates.addAll(unavailableDates);

@@ -31,8 +31,7 @@ public class Booking {
     @Column(name = "user_id")
     private UUID userId;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "booking_id")
+    @OneToMany(mappedBy = "booking")
     @ToString.Exclude
     private List<Room> rooms;
 
