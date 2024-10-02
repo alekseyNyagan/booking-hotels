@@ -24,6 +24,7 @@ repositories {
 extra["springCloudVersion"] = "2023.0.3"
 
 dependencies {
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.liquibase:liquibase-core:4.29.2")
