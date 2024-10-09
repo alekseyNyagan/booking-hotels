@@ -14,7 +14,6 @@ import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
 import com.aleksey.booking.hotels.utils.DateConverter;
-import com.aleksey.booking.hotels.utils.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.Page;
@@ -63,7 +62,7 @@ public class BookingServiceImpl implements BookingService {
                     , departureDate);
             bookingRepository.save(booking);
             Message<StatisticModel> message = MessageBuilder.withPayload(
-                    new StatisticModel(userId, arrivalDate, departureDate, UserContext.getCorrelationId())).build();
+                    new StatisticModel(userId, arrivalDate, departureDate)).build();
             streamBridge.send("producer-out-0", message);
             createBooking.tag("peer.service", "createBooking");
             createBooking.annotate("Client received");

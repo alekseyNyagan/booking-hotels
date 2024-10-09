@@ -20,6 +20,7 @@ spring:
       kafka:
         binder:
           brokers: kafka:9092
+          enableObservation: true
       bindings:
         consumer-in-0:
           destination: statistic

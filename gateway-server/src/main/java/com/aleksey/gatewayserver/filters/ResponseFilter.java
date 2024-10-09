@@ -15,6 +15,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ResponseFilter {
 
+    public static final String CORRELATION_ID = "tmx-correlation-id";
+
     private final Tracer tracer;
 
     @Bean
@@ -24,7 +26,7 @@ public class ResponseFilter {
                     tracer.currentSpan().context().traceIdString();
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 log.debug("Adding the correlation id to the outbound headers. {}", traceId);
-                exchange.getResponse().getHeaders().add(FilterUtils.CORRELATION_ID, traceId);
+                exchange.getResponse().getHeaders().add(CORRELATION_ID, traceId);
                 log.debug("Completing outgoing request for {}.", exchange.getRequest().getURI());
 
             }));
