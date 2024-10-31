@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.4"
+	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -24,7 +24,7 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.0")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.3")
 }
 
 dependencyManagement {

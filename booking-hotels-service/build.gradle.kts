@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.3.4"
+    id("org.springframework.boot") version "3.3.5"
     id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -36,13 +36,13 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
-    implementation("org.springframework.boot:spring-boot-jarmode-layertools:3.2.10")
+    implementation("org.springframework.boot:spring-boot-jarmode-layertools:3.2.11")
     implementation("org.springframework.cloud:spring-cloud-stream")
     implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
-    implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.4")
+    implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.5")
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.4.2")
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.13.4")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
     compileOnly("org.projectlombok:lombok")
     compileOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql:42.7.4")

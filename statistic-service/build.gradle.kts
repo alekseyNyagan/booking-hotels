@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.4"
+	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -35,16 +35,16 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	implementation("org.springframework.cloud:spring-cloud-stream")
 	implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
-	implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.4")
+	implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.5")
 	implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.4.2")
 	implementation("com.opencsv:opencsv:5.9")
 	implementation("net.logstash.logback:logstash-logback-encoder:8.0")
-	implementation("io.micrometer:micrometer-registry-prometheus:1.13.4")
+	implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.0")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.3")
 }
 
 dependencyManagement {
