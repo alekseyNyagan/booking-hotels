@@ -23,7 +23,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.keycloak:keycloak-admin-client:25.0.2")
+	implementation("org.keycloak:keycloak-admin-client:25.0.6")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.5")
