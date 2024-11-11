@@ -6,7 +6,6 @@ import com.aleksey.booking.hotels.api.request.UpsertHotelRequest;
 import com.aleksey.booking.hotels.api.response.HotelListResponse;
 import com.aleksey.booking.hotels.api.response.HotelPaginationResponse;
 import com.aleksey.booking.hotels.api.response.HotelResponse;
-
 import com.aleksey.booking.hotels.api.response.RateRequest;
 import com.aleksey.booking.hotels.mapper.HotelMapper;
 import com.aleksey.booking.hotels.model.Hotel;
@@ -89,7 +88,7 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public HotelPaginationResponse filterBy(HotelFilter hotelFilter) {
-        Page<Hotel> hotelsPage = hotelRepository.findAll(HotelSpecification.withFilter(hotelFilter),
+        Page<Hotel> hotelsPage = hotelRepository.findAll(new HotelSpecification(hotelFilter),
                 PageRequest.of(hotelFilter.pageNumber(), hotelFilter.pageSize()));
         return hotelMapper.hotelListToHotelPaginationResponse(hotelsPage.getTotalElements(), hotelsPage.getContent());
     }
