@@ -69,21 +69,24 @@ public class HotelServiceImpl implements HotelService {
         Hotel hotel = hotelRepository.findById(rateRequest.hotelId()).orElseThrow(() ->
                 new EntityNotFoundException("Отель не найден!"));
 
+        Byte newMark = rateRequest.newMark();
         double rating = hotel.getRating();
         int marksCount = hotel.getMarksCount();
+
+        if (marksCount == 0) {
+            saveHotelWithNewRating(hotel, newMark.doubleValue());
+            return;
+        }
 
         BigDecimal totalRating = BigDecimal.valueOf(rating)
                 .multiply(BigDecimal.valueOf(marksCount))
                 .subtract(BigDecimal.valueOf(rating))
-                .add(BigDecimal.valueOf(rateRequest.newMark()));
+                .add(BigDecimal.valueOf(newMark));
 
         BigDecimal newRating = totalRating
                 .divide(BigDecimal.valueOf(marksCount), 1, RoundingMode.HALF_DOWN);
 
-        hotel.setRating(newRating.doubleValue());
-        hotel.setMarksCount(++marksCount);
-
-        hotelRepository.save(hotel);
+        saveHotelWithNewRating(hotel, newRating.doubleValue(), ++marksCount);
     }
 
     @Override
@@ -91,5 +94,15 @@ public class HotelServiceImpl implements HotelService {
         Page<Hotel> hotelsPage = hotelRepository.findAll(new HotelSpecification(hotelFilter),
                 PageRequest.of(hotelFilter.pageNumber(), hotelFilter.pageSize()));
         return hotelMapper.hotelListToHotelPaginationResponse(hotelsPage.getTotalElements(), hotelsPage.getContent());
+    }
+
+    private void saveHotelWithNewRating(Hotel hotel, Double newRating, int marksCount) {
+        hotel.setRating(newRating);
+        hotel.setMarksCount(marksCount);
+        hotelRepository.save(hotel);
+    }
+
+    private void saveHotelWithNewRating(Hotel hotel, Double newRating) {
+        saveHotelWithNewRating(hotel, newRating, 1);
     }
 }
