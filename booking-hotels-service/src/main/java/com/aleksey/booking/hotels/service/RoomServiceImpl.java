@@ -52,7 +52,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomPaginationResponse filterBy(RoomFilter filter) {
-        Page<Room> rooms = roomRepository.findAll(RoomSpecification.withFilter(filter),
+        Page<Room> rooms = roomRepository.findAll(new RoomSpecification(filter),
                 PageRequest.of(filter.pageNumber(), filter.pageSize()));
         return roomMapper.roomListToRoomPaginationResponse(rooms.getTotalElements(), rooms.getContent());
     }
