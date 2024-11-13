@@ -43,6 +43,7 @@ dependencies {
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.4.2")
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
+    testImplementation("org.junit.platform:junit-platform-launcher:1.11.3")
     compileOnly("org.projectlombok:lombok")
     compileOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql:42.7.4")

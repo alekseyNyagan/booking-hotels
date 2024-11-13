@@ -7,31 +7,54 @@ import com.aleksey.booking.hotels.utils.DateConverter;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDate;
 
-public interface RoomSpecification {
+public class RoomSpecification implements Specification<Room> {
 
-    static Specification<Room> withFilter(RoomFilter filter) {
-        return Specification.where(byRoomId(filter.roomId()))
-                .and(byCostRange(filter.minCost(), filter.maxCost()))
-                .and(byCountOfVisitors(filter.countOfVisitors()))
-                .and(byAvailableDates(filter.arrivalDate(), filter.departureDate()))
-                .and(byHotelId(filter.hotelId()));
+    private final RoomFilter filter;
+
+    public RoomSpecification(RoomFilter filter) {
+        this.filter = filter;
     }
 
-    static Specification<Room> byRoomId(Long roomId) {
-        return (root, query, criteriaBuilder) -> {
-            if (roomId == null) {
-                return null;
-            }
+    @Override
+    public Predicate toPredicate(@NotNull Root<Room> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        Predicate predicate = criteriaBuilder.conjunction();
 
-            return criteriaBuilder.equal(root.get("id"), roomId);
-        };
+        if (filter.roomId() != null) {
+            predicate = criteriaBuilder.and(predicate, byRoomId(filter.roomId()).toPredicate(root, query, criteriaBuilder));
+        }
+
+        if (filter.minCost() != null || filter.maxCost() != null) {
+            predicate = criteriaBuilder.and(predicate, byCostRange(filter.minCost(), filter.maxCost()).toPredicate(root, query, criteriaBuilder));
+        }
+
+        if (filter.countOfVisitors() != null) {
+            predicate = criteriaBuilder.and(predicate, byCountOfVisitors(filter.countOfVisitors()).toPredicate(root, query, criteriaBuilder));
+        }
+
+        if (filter.arrivalDate() != null && filter.departureDate() != null) {
+            predicate = criteriaBuilder.and(predicate, byAvailableDates(filter.arrivalDate(), filter.departureDate()).toPredicate(root, query, criteriaBuilder));
+        }
+
+        if (filter.hotelId() != null) {
+            predicate = criteriaBuilder.and(predicate, byHotelId(filter.hotelId()).toPredicate(root, query, criteriaBuilder));
+        }
+
+        return predicate;
     }
 
-    static Specification<Room> byCostRange(Integer minCost, Integer maxCost) {
+    public static Specification<Room> byRoomId(Long roomId) {
+        return (root, query, criteriaBuilder) -> roomId == null ? null : criteriaBuilder.equal(root.get("id"), roomId);
+    }
+
+    public static Specification<Room> byCostRange(Integer minCost, Integer maxCost) {
         return (root, query, criteriaBuilder) -> {
             if (minCost == null && maxCost == null) {
                 return null;
@@ -46,17 +69,11 @@ public interface RoomSpecification {
         };
     }
 
-    static Specification<Room> byCountOfVisitors(Integer countOfVisitors) {
-        return (root, query, criteriaBuilder) -> {
-            if (countOfVisitors == null) {
-                return null;
-            }
-
-            return criteriaBuilder.equal(root.get("max_count_of_people"), countOfVisitors);
-        };
+    public static Specification<Room> byCountOfVisitors(Integer countOfVisitors) {
+        return (root, query, criteriaBuilder) -> countOfVisitors == null ? null : criteriaBuilder.equal(root.get("max_count_of_people"), countOfVisitors);
     }
 
-    static Specification<Room> byAvailableDates(String arrivalDate, String departureDate) {
+    public static Specification<Room> byAvailableDates(String arrivalDate, String departureDate) {
         return (root, query, criteriaBuilder) -> {
             if (arrivalDate == null || departureDate == null) {
                 return null;
@@ -75,13 +92,7 @@ public interface RoomSpecification {
         };
     }
 
-    static Specification<Room> byHotelId(Long hotelId) {
-        return (root, query, criteriaBuilder) -> {
-            if (hotelId == null) {
-                return null;
-            }
-
-            return criteriaBuilder.equal(root.get("hotel").get("id"), hotelId);
-        };
+    public static Specification<Room> byHotelId(Long hotelId) {
+        return (root, query, criteriaBuilder) -> hotelId == null ? null : criteriaBuilder.equal(root.get("hotel").get("id"), hotelId);
     }
 }
