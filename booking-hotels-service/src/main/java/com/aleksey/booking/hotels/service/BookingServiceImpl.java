@@ -1,12 +1,11 @@
 package com.aleksey.booking.hotels.service;
 
-import brave.ScopedSpan;
 import brave.Tracer;
+import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
 import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
-import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
-import com.aleksey.booking.hotels.kafka.model.StatisticModel;
 import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
+import com.aleksey.booking.hotels.kafka.model.StatisticModel;
 import com.aleksey.booking.hotels.mapper.BookingMapper;
 import com.aleksey.booking.hotels.model.Booking;
 import com.aleksey.booking.hotels.model.Room;
@@ -55,7 +54,6 @@ public class BookingServiceImpl implements BookingService {
             throw new RoomsUnavailableException("На данную дату, данные комнаты уже забронированы!");
         } else {
             UUID userId = UUID.fromString(jwt.getSubject());
-            ScopedSpan createBooking = tracer.startScopedSpan("createBooking");
             Booking booking = bookingMapper.toEntity(userId
                     , rooms
                     , arrivalDate
@@ -64,9 +62,6 @@ public class BookingServiceImpl implements BookingService {
             Message<StatisticModel> message = MessageBuilder.withPayload(
                     new StatisticModel(userId, arrivalDate, departureDate)).build();
             streamBridge.send("producer-out-0", message);
-            createBooking.tag("peer.service", "createBooking");
-            createBooking.annotate("Client received");
-            createBooking.finish();
             return bookingMapper.toDto(booking);
         }
     }
