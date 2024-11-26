@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.5"
+	id("org.springframework.boot") version "3.4.0"
 	id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -15,9 +15,12 @@ java {
 
 repositories {
 	mavenCentral()
+	maven {
+		url = uri("https://repo.spring.io/snapshot")
+	}
 }
 
-extra["springCloudVersion"] = "2023.0.3"
+extra["springCloudVersion"] = "2024.0.0-SNAPSHOT"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
@@ -26,10 +29,10 @@ dependencies {
 	implementation("org.keycloak:keycloak-admin-client:25.0.6")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-	implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.5")
+	implementation("io.micrometer:micrometer-tracing-bridge-brave")
 	implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.4.2")
 	implementation("net.logstash.logback:logstash-logback-encoder:8.0")
-	implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
+	implementation("io.micrometer:micrometer-registry-prometheus:1.14.1")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

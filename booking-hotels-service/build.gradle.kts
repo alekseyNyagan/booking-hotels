@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.3.5"
+    id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -19,16 +19,19 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://repo.spring.io/snapshot")
+    }
 }
 
-extra["springCloudVersion"] = "2023.0.3"
+extra["springCloudVersion"] = "2024.0.0-SNAPSHOT"
 
 dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.liquibase:liquibase-core:4.29.2")
-    implementation("org.mapstruct:mapstruct:1.6.2")
+    implementation("org.liquibase:liquibase-core:4.30.0")
+    implementation("org.mapstruct:mapstruct:1.6.3")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
@@ -37,21 +40,21 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
-    implementation("org.springframework.boot:spring-boot-jarmode-layertools:3.2.11")
+    implementation("org.springframework.boot:spring-boot-jarmode-layertools:3.2.12")
     implementation("org.springframework.cloud:spring-cloud-stream")
     implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
-    implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.5")
+    implementation("io.micrometer:micrometer-tracing-bridge-brave:1.4.0")
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.4.2")
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.14.1")
     testImplementation("org.junit.platform:junit-platform-launcher:1.11.3")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter")
     compileOnly("org.projectlombok:lombok")
     compileOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql:42.7.4")
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
+    annotationProcessor("org.projectlombok:lombok:1.18.36")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 }

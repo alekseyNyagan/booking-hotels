@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.5"
+	id("org.springframework.boot") version "3.4.0"
 	id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -15,16 +15,19 @@ java {
 
 repositories {
 	mavenCentral()
+	maven {
+		url = uri("https://repo.spring.io/snapshot")
+	}
 }
 
-extra["springCloudVersion"] = "2023.0.3"
+extra["springCloudVersion"] = "2024.0.0-SNAPSHOT"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-	implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.5")
+	implementation("io.micrometer:micrometer-tracing-bridge-brave:1.4.0")
 	implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.4.2")
 	implementation("commons-codec:commons-codec:1.17.1")
 	implementation("org.json:json:20240303")
