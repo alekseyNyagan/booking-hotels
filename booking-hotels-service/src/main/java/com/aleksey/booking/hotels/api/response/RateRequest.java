@@ -1,6 +1,7 @@
 package com.aleksey.booking.hotels.api.response;
 
-import jakarta.validation.constraints.Size;
+import com.aleksey.booking.hotels.annotation.MarkSize;
+import jakarta.validation.constraints.NotNull;
 
-public record RateRequest(Long hotelId, @Size(min = 1, max = 5, message = "Оценка может быть от 1 до 5!") Byte newMark) {
+public record RateRequest(Long hotelId, @MarkSize @NotNull Byte newMark) {
 }
