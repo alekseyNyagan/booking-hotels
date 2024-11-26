@@ -7,12 +7,12 @@ import com.aleksey.booking.hotels.utils.DateConverter;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
+
 import java.time.LocalDate;
 
 public class RoomSpecification implements Specification<Room> {
@@ -24,7 +24,7 @@ public class RoomSpecification implements Specification<Room> {
     }
 
     @Override
-    public Predicate toPredicate(@NotNull Root<Room> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(Root<Room> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         Predicate predicate = criteriaBuilder.conjunction();
 
         if (filter.roomId() != null) {

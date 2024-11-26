@@ -2,7 +2,6 @@ package com.aleksey.booking.hotels.repository;
 
 import com.aleksey.booking.hotels.api.request.HotelFilter;
 import com.aleksey.booking.hotels.model.Hotel;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -19,7 +18,7 @@ public class HotelSpecification implements Specification<Hotel> {
     }
 
     @Override
-    public Predicate toPredicate(@NotNull Root<Hotel> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(Root<Hotel> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         Predicate predicate = criteriaBuilder.conjunction();
 
         if (filter.hotelName() != null) {
