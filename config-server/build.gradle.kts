@@ -15,12 +15,9 @@ java {
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://repo.spring.io/snapshot")
-    }
 }
 
-extra["springCloudVersion"] = "2024.0.0-SNAPSHOT"
+extra["springCloudVersion"] = "2024.0.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
