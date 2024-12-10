@@ -38,10 +38,6 @@ eureka:
     serviceUrl:
       defaultZone: http://${EUREKA_HOST:localhost}:8070/eureka/
 logging:
-  level:
-    org:
-      springframework:
-        security: TRACE
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 server:
