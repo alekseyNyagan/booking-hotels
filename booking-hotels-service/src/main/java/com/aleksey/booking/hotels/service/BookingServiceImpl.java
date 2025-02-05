@@ -67,6 +67,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingPaginationResponse getBookingPage(Integer pageSize, Integer pageNumber) {
         Page<Booking> bookings = bookingRepository.findAll(PageRequest.of(pageNumber, pageSize));
         return bookingMapper.bookingListToBookingPaginationResponse(bookings.getTotalElements(), bookings.getContent());

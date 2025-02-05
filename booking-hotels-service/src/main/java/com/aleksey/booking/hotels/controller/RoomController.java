@@ -91,7 +91,7 @@ public class RoomController {
             ))
     })
     public ResponseEntity<RoomPaginationResponse> roomPage(
-            @Parameter(description = "Filter for rooms searching", required = true) RoomFilter filter) {
+            @Parameter(description = "Filter for rooms searching", required = true) @RequestBody RoomFilter filter) {
         return ResponseEntity.ok(roomService.filterBy(filter));
     }
 }

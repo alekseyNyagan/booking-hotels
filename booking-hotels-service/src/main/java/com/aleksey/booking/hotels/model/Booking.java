@@ -2,6 +2,7 @@ package com.aleksey.booking.hotels.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
@@ -33,6 +34,7 @@ public class Booking {
 
     @OneToMany(mappedBy = "booking")
     @ToString.Exclude
+    @BatchSize(size = 5)
     private List<Room> rooms;
 
     @Override

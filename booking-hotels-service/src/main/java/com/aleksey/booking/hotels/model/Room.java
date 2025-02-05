@@ -2,6 +2,7 @@ package com.aleksey.booking.hotels.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
@@ -42,6 +43,7 @@ public class Room {
             , inverseJoinColumns = @JoinColumn(name = "date_id")
     )
     @ToString.Exclude
+    @BatchSize(size = 5)
     private Set<UnavailableDate> unavailableDates;
 
     @ManyToOne(fetch = FetchType.LAZY)
