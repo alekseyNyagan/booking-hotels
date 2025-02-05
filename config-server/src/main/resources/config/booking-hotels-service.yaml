@@ -16,8 +16,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/booking-hotels-realm
-          jwk-set-uri: http://keycloak:8080/realms/booking-hotels-realm/protocol/openid-connect/certs
+          issuer-uri: http://${KEYCLOAK_HOST:localhost}:8080/realms/booking-hotels-realm
+          jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:8080/realms/booking-hotels-realm/protocol/openid-connect/certs
   cloud:
     stream:
       output-bindings: producer
@@ -28,7 +28,7 @@ spring:
         binder:
           enableObservation: true
           transactionIdPrefix: statistic-
-          brokers: kafka:9092
+          brokers: ${KAFKA_BROKERS:localhost}:9092
 eureka:
   instance:
     preferIpAddress: true
@@ -48,7 +48,7 @@ management:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: http://zipkin:9411/api/v2/spans
+      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
   endpoints:
     web:
       exposure:

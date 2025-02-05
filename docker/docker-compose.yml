@@ -7,6 +7,9 @@ services:
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
       - EUREKA_HOST=eureka-server
       - POSTGRES_HOST=postgres
+      - KEYCLOAK_HOST=keycloak
+      - ZIPKIN_HOST=zipkin
+      - KAFKA_BROKERS=kafka
     depends_on:
       postgres:
         condition: service_started
