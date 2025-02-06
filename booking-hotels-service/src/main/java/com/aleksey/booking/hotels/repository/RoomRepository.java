@@ -7,7 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,14 +17,12 @@ import java.util.Optional;
 public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificationExecutor<Room> {
 
     @Override
-    @NonNull
     @EntityGraph(attributePaths = {"unavailableDates"})
-    Optional<Room> findById(@NonNull Long aLong);
+    Optional<Room> findById(Long aLong);
 
     @EntityGraph(attributePaths = {"unavailableDates"})
     List<Room> findAllByIdIn(List<Long> ids);
 
-    @NonNull
     @Override
-    Page<Room> findAll(Specification<Room> specification, @NonNull Pageable pageable);
+    Page<Room> findAll(@Nullable Specification<Room> specification, Pageable pageable);
 }
