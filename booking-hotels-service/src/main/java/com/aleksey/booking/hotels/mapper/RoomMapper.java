@@ -4,6 +4,7 @@ import com.aleksey.booking.hotels.api.response.RoomInfo;
 import com.aleksey.booking.hotels.api.response.RoomPaginationResponse;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
 import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
+import com.aleksey.booking.hotels.model.Hotel;
 import com.aleksey.booking.hotels.model.Room;
 import com.aleksey.booking.hotels.model.UnavailableDate;
 import org.mapstruct.*;
@@ -16,10 +17,12 @@ import java.util.stream.Collectors;
 @DecoratedWith(RoomMapperDelegate.class)
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface RoomMapper {
-    Room toEntity(UpsertRoomRequest upsertRoomRequest);
+    @Mapping(source = "upsertRoomRequest.name", target = "name")
+    Room toEntity(UpsertRoomRequest upsertRoomRequest, Hotel hotel);
 
     @Mapping(source = "roomId", target = "id")
-    Room toEntity(Long roomId, UpsertRoomRequest upsertRoomRequest);
+    @Mapping(source = "upsertRoomRequest.name", target = "name")
+    Room toEntity(Long roomId, UpsertRoomRequest upsertRoomRequest, Hotel hotel);
 
     RoomResponse toDto(Room room);
 

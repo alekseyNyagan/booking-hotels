@@ -3,21 +3,16 @@ package com.aleksey.booking.hotels.mapper;
 import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
 import com.aleksey.booking.hotels.api.response.RoomInfo;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
+import com.aleksey.booking.hotels.model.Hotel;
 import com.aleksey.booking.hotels.model.Room;
-import com.aleksey.booking.hotels.repository.HotelRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 import java.util.List;
 
 public abstract class RoomMapperDelegate implements RoomMapper {
 
-    @Autowired
-    private HotelRepository hotelRepository;
-
     @Override
-    public Room toEntity(UpsertRoomRequest upsertRoomRequest) {
+    public Room toEntity(UpsertRoomRequest upsertRoomRequest, Hotel hotel) {
         Room room = new Room();
         room.setCost(upsertRoomRequest.cost());
         room.setName(upsertRoomRequest.name());
@@ -25,14 +20,13 @@ public abstract class RoomMapperDelegate implements RoomMapper {
         room.setDescription(upsertRoomRequest.description());
         room.setMaxCountOfPeople(upsertRoomRequest.maxCountOfPeople());
         room.setUnavailableDates(new HashSet<>());
-        room.setHotel(hotelRepository.findById(upsertRoomRequest.hotelId()).orElseThrow(() ->
-                new EntityNotFoundException("Отель с id " + upsertRoomRequest.hotelId() + " не найден!")));
+        room.setHotel(hotel);
         return room;
     }
 
     @Override
-    public Room toEntity(Long id, UpsertRoomRequest upsertRoomRequest) {
-        Room room = toEntity(upsertRoomRequest);
+    public Room toEntity(Long id, UpsertRoomRequest upsertRoomRequest, Hotel hotel) {
+        Room room = toEntity(upsertRoomRequest, hotel);
         room.setId(id);
         return room;
     }

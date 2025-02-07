@@ -5,7 +5,9 @@ import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
 import com.aleksey.booking.hotels.api.response.RoomPaginationResponse;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
 import com.aleksey.booking.hotels.mapper.RoomMapper;
+import com.aleksey.booking.hotels.model.Hotel;
 import com.aleksey.booking.hotels.model.Room;
+import com.aleksey.booking.hotels.repository.HotelRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
 import com.aleksey.booking.hotels.repository.RoomSpecification;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +26,8 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
 
+    private final HotelRepository hotelRepository;
+
     private final RoomMapper roomMapper;
 
     @Override
@@ -33,15 +37,21 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public RoomResponse createRoom(UpsertRoomRequest upsertRoomRequest) {
-        Room room = roomMapper.toEntity(upsertRoomRequest);
+        Hotel hotel = hotelRepository.findById(upsertRoomRequest.hotelId()).orElseThrow(() ->
+                new EntityNotFoundException("Отель с id " + upsertRoomRequest.hotelId() + " не найден!"));
+        Room room = roomMapper.toEntity(upsertRoomRequest, hotel);
         roomRepository.save(room);
         return roomMapper.toDto(room);
     }
 
     @Override
+    @Transactional
     public RoomResponse updateRoom(Long id, UpsertRoomRequest upsertRoomRequest) {
-        Room room = roomMapper.toEntity(id, upsertRoomRequest);
+        Hotel hotel = hotelRepository.findById(upsertRoomRequest.hotelId()).orElseThrow(() ->
+                new EntityNotFoundException("Отель с id " + upsertRoomRequest.hotelId() + " не найден!"));
+        Room room = roomMapper.toEntity(id, upsertRoomRequest, hotel);
         roomRepository.save(room);
         return roomMapper.toDto(room);
     }
