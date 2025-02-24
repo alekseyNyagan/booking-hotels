@@ -12,6 +12,10 @@ spring:
     open-in-view: false
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/booking_hotels
+    user: postgres
+    password: postgres
+    analytics-enabled: false
   security:
     oauth2:
       resourceserver:
