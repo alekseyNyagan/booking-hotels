@@ -47,6 +47,11 @@ logging:
 server:
   port: 8180
 management:
+  observations:
+    http:
+      server:
+        requests:
+          write-trace-header: true
   tracing:
     sampling:
       probability: 1.0
