@@ -9,8 +9,32 @@ eureka:
     serviceUrl:
       defaultZone: http://${EUREKA_HOST:eureka-server}:${EUREKA_PORT:8070}/eureka/
 spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            authorization-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:8080}/realms/booking-hotels-realm/protocol/openid-connect/auth
+            token-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:8080}/realms/booking-hotels-realm/protocol/openid-connect/token
+            user-info-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:8080}/realms/booking-hotels-realm/protocol/openid-connect/userinfo
+            issuer-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:8080}/realms/booking-hotels-realm
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: ${KEYCLOAK_CLIENT_ID:booking-hotels}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET:4aQS25UnlMEmQbpsIdR1GKzWl60BH4Bs}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - profile
+              - email
+              - roles
   cloud:
     gateway:
+      default-filters:
+        - TokenRelay
       routes:
         - id: user-service
           uri: lb://user-service
