@@ -1,17 +1,19 @@
 keycloak:
-  server-url: http://keycloak:8080
-  realm: booking-hotels-realm
-  username: admin
-  password: adminpass
-  auth-server-url: http://keycloak:8080/auth
+  server-url: http://${KEYCLOAK_HOST:keycloak}:${KEYCLOAK_PORT:8080}
+  realm: ${KEYCLOAK_REALM:booking-hotels-realm}
+  username: ${KEYCLOAK_USERNAME:admin}
+  password: ${KEYCLOAK_PASSWORD:adminpass}
+  auth-server-url: http://${KEYCLOAK_HOST:keycloak}:${KEYCLOAK_PORT:8080}/auth
   ssl-required: external
-  resource: booking-hotels
+  resource: ${KEYCLOAK_RESOURCE:booking-hotels}
   credentials:
-    secret: TrPS1K8XeHm5Ii8p0oPIhGb0KyEJadBv
+    secret: ${KEYCLOAK_SECRET:4aQS25UnlMEmQbpsIdR1GKzWl60BH4Bs}
   use-resource-role-mappings: true
   bearer-only: true
+
 server:
-  port: 8073
+  port: ${SERVER_PORT:8073}
+
 eureka:
   instance:
     preferIpAddress: true
@@ -19,17 +21,20 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://eureka-server:8070/eureka/
+      defaultZone: http://${EUREKA_HOST:eureka-server}:${EUREKA_PORT:8070}/eureka/
+
 spring:
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/booking-hotels-realm
-          jwk-set-uri: http://keycloak:8080/realms/booking-hotels-realm/protocol/openid-connect/certs
+          issuer-uri: http://${KEYCLOAK_HOST:keycloak}:${KEYCLOAK_PORT:8080}/realms/${KEYCLOAK_REALM:booking-hotels-realm}
+          jwk-set-uri: http://${KEYCLOAK_HOST:keycloak}:${KEYCLOAK_PORT:8080}/realms/${KEYCLOAK_REALM:booking-hotels-realm}/protocol/openid-connect/certs
+
 logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
 management:
   observations:
     http:
@@ -41,7 +46,7 @@ management:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: http://zipkin:9411/api/v2/spans
+      endpoint: http://${ZIPKIN_HOST:zipkin}:${ZIPKIN_PORT:9411}/api/v2/spans
   endpoints:
     web:
       exposure:

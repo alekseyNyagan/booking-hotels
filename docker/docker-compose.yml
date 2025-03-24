@@ -5,11 +5,19 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
+      - SERVER_PORT=8180
       - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8070
       - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - KEYCLOAK_HOST=keycloak
+      - KEYCLOAK_PORT=8080
       - ZIPKIN_HOST=zipkin
+      - ZIPKIN_PORT=9411
       - KAFKA_BROKERS=kafka
+      - KAFKA_PORT=9092
     depends_on:
       postgres:
         condition: service_started
@@ -28,6 +36,18 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
+      - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8070
+      - SERVER_PORT=8073
+      - ZIPKIN_HOST=zipkin
+      - ZIPKIN_PORT=9411
+      - KEYCLOAK_HOST=keycloak
+      - KEYCLOAK_PORT=8080
+      - KEYCLOAK_REALM=booking-hotels-realm
+      - KEYCLOAK_USERNAME=admin
+      - KEYCLOAK_PASSWORD=adminpass
+      - KEYCLOAK_RESOURCE=booking-hotels
+      - KEYCLOAK_SECRET=4aQS25UnlMEmQbpsIdR1GKzWl60BH4Bs
     depends_on:
       config-server:
         condition: service_healthy
@@ -47,6 +67,20 @@ services:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
       - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8070
+      - SERVER_PORT=8181
+      - ZIPKIN_HOST=zipkin
+      - ZIPKIN_PORT=9411
+      - KEYCLOAK_HOST=keycloak
+      - KEYCLOAK_PORT=8080
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DATABASE=statistic
+      - MONGO_USERNAME=admin
+      - MONGO_PASSWORD=password
+      - MONGO_AUTH_DATABASE=admin
+      - KAFKA_BROKERS=kafka
+      - KAFKA_PORT=9092
     depends_on:
       mongodb:
         condition: service_started
@@ -68,6 +102,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=native
       - ENCRYPT_KEY=IMSYMMETRIC
+      - SERVER_PORT=8071
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8071/actuator/health || exit 1
       interval: 30s
@@ -83,6 +118,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
+      - SERVER_PORT=8070
     depends_on:
       config-server:
         condition: service_healthy
@@ -94,6 +130,11 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
+      - SERVER_PORT=8072
+      - ZIPKIN_HOST=zipkin
+      - ZIPKIN_PORT=9411
+      - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8070
     depends_on:
       config-server:
         condition: service_healthy

@@ -1,5 +1,5 @@
 server:
-  port: 8070
+  port: ${SERVER:PORT:8070}
 eureka:
   instance:
     hostname: localhost

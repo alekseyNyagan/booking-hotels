@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/booking_hotels
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/booking_hotels
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
   jpa:
     properties:
       hibernate:
@@ -12,16 +12,16 @@ spring:
     open-in-view: false
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/booking_hotels
-    user: postgres
-    password: postgres
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/booking_hotels
+    user: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
     analytics-enabled: false
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://${KEYCLOAK_HOST:localhost}:8080/realms/booking-hotels-realm
-          jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:8080/realms/booking-hotels-realm/protocol/openid-connect/certs
+          issuer-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:8080}/realms/booking-hotels-realm
+          jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:8080}/realms/booking-hotels-realm/protocol/openid-connect/certs
   cloud:
     stream:
       output-bindings: producer
@@ -32,7 +32,7 @@ spring:
         binder:
           enableObservation: true
           transactionIdPrefix: statistic-
-          brokers: ${KAFKA_BROKERS:localhost}:9092
+          brokers: ${KAFKA_BROKERS:localhost}:${KAFKA_PORT:9092}
 eureka:
   instance:
     preferIpAddress: true
@@ -40,12 +40,12 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://${EUREKA_HOST:localhost}:8070/eureka/
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8070}/eureka/
 logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 server:
-  port: 8180
+  port: ${SERVER_PORT:8180}
 management:
   observations:
     http:
@@ -57,7 +57,7 @@ management:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
+      endpoint: http://${ZIPKIN_HOST:localhost}:${ZIPKIN_PORT:9411}/api/v2/spans
   endpoints:
     web:
       exposure:
