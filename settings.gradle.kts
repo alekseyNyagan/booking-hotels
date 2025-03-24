@@ -5,3 +5,12 @@ include("eureka-server")
 include("gateway-server")
 include("user-service")
 include("statistic-service")
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            url = uri("https://repo.spring.io/milestone")
+        }
+    }
+}

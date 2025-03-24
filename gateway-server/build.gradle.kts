@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.4.3"
+	id("org.springframework.boot") version "3.5.0-M3"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -15,14 +15,16 @@ java {
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-extra["springCloudVersion"] = "2024.0.0"
+extra["springCloudVersion"] = "2025.0.0-M2"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
-	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
+	implementation("org.springframework.cloud:spring-cloud-gateway-server-webflux")
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	implementation("io.micrometer:micrometer-tracing-bridge-brave")
 	implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.5.0")

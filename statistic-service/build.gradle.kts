@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.4.3"
+	id("org.springframework.boot") version "3.5.0-M3"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -21,9 +21,10 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-extra["springCloudVersion"] = "2024.0.0"
+extra["springCloudVersion"] = "2025.0.0-M2"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
