@@ -7,6 +7,7 @@ import com.aleksey.booking.hotels.api.response.RoomResponse;
 import com.aleksey.booking.hotels.mapper.RoomMapper;
 import com.aleksey.booking.hotels.model.Hotel;
 import com.aleksey.booking.hotels.model.Room;
+import com.aleksey.booking.hotels.repository.HotelRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
 import com.aleksey.booking.hotels.repository.RoomSpecification;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +31,7 @@ class RoomServiceImplTest {
 
     private RoomServiceImpl roomService;
     private RoomRepository roomRepository;
+    private HotelRepository hotelRepository;
     private RoomMapper roomMapper;
     private Hotel hotel;
 
@@ -37,7 +39,8 @@ class RoomServiceImplTest {
     void setUp() {
         roomRepository = Mockito.mock(RoomRepository.class);
         roomMapper = Mockito.mock(RoomMapper.class);
-        roomService = new RoomServiceImpl(roomRepository, roomMapper);
+        hotelRepository = Mockito.mock(HotelRepository.class);
+        roomService = new RoomServiceImpl(roomRepository, hotelRepository, roomMapper);
         hotel = new Hotel();
         hotel.setId(1L);
         hotel.setName("Test Hotel");
@@ -110,7 +113,8 @@ class RoomServiceImplTest {
         room.setHotel(hotel);
         RoomResponse roomResponse = new RoomResponse(1L, "Standard Room", "A cozy room", "102", 80, 2, new HashSet<>(), 1L);
 
-        when(roomMapper.toEntity(request)).thenReturn(room);
+        when(hotelRepository.findById(request.hotelId())).thenReturn(Optional.of(hotel));
+        when(roomMapper.toEntity(request, hotel)).thenReturn(room);
         when(roomRepository.save(room)).thenReturn(room);
         when(roomMapper.toDto(room)).thenReturn(roomResponse);
 
@@ -142,7 +146,8 @@ class RoomServiceImplTest {
         room.setHotel(hotel);
         RoomResponse roomResponse = new RoomResponse(roomId, "Updated Room", "An updated description", "103", 90, 3, new HashSet<>(), 1L);
 
-        when(roomMapper.toEntity(roomId, request)).thenReturn(room);
+        when(hotelRepository.findById(request.hotelId())).thenReturn(Optional.of(hotel));
+        when(roomMapper.toEntity(roomId, request, hotel)).thenReturn(room);
         when(roomRepository.save(room)).thenReturn(room);
         when(roomMapper.toDto(room)).thenReturn(roomResponse);
 
