@@ -22,7 +22,7 @@ repositories {
     maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-extra["springCloudVersion"] = "2025.0.0-M2"
+extra["springCloudVersion"] = "2025.0.0-M3"
 
 dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
