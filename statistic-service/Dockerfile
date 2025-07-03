@@ -1,13 +1,25 @@
-FROM alpine/java:21-jdk as build
-WORKDIR app
-ARG JAR_FILE=build/libs/*.jar
-COPY ${JAR_FILE} app.jar
-RUN java -Djarmode=layertools -jar app.jar extract
+FROM gradle:8.14.2 AS builder
+WORKDIR /application
+COPY . .
+RUN --mount=type=cache,target=/root/.gradle gradle clean :statistic-service:build -x test
 
-FROM alpine/java:21-jdk
-WORKDIR app
-COPY --from=build app/dependencies/ ./
-COPY --from=build app/spring-boot-loader/ ./
-COPY --from=build app/snapshot-dependencies/ ./
-COPY --from=build app/application/ ./
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+FROM amazoncorretto:21-alpine AS layers
+WORKDIR /application
+COPY --from=builder /application/statistic-service/build/libs/*.jar app.jar
+RUN java -Djarmode=tools -jar app.jar extract --layers --destination extracted
+
+FROM amazoncorretto:21-alpine
+VOLUME /tmp
+
+WORKDIR /application
+
+COPY --from=layers /application/extracted/dependencies/ ./
+COPY --from=layers /application/extracted/spring-boot-loader/ ./
+COPY --from=layers /application/extracted/snapshot-dependencies/ ./
+COPY --from=layers /application/extracted/application/ ./
+
+ENV JAVA_ERROR_FILE_OPTS="-XX:ErrorFile=/tmp/java_error.log"
+
+ENTRYPOINT java \
+    $JAVA_ERROR_FILE_OPTS \
+    -jar app.jar
