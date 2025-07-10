@@ -26,12 +26,14 @@ services:
       POSTGRES_PASSWORD: postgres
 
   keycloak:
-    image: keycloak/keycloak
+    build: ./keycloak
     container_name: keycloak
-    command: start-dev --import-realm
+    command:
+      - start
+      - --optimized
+      - --import-realm
     environment:
       KC_DB: postgres
-      KC_DB_SCHEMA: public
       KC_DB_URL_HOST: keycloak-postgres
       KC_DB_URL_PORT: 5432
       KC_DB_URL_DATABASE: keycloakdb
@@ -39,10 +41,27 @@ services:
       KC_DB_PASSWORD: keycloakpass
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: adminpass
+      KC_HTTP_ENABLED: "true"
+      KC_HTTP_PORT: 8080
+      KC_MANAGEMENT_ENABLED: "true"
+      KC_HTTP_MANAGEMENT_PORT: 9000
+      KC_HOSTNAME_STRICT: "false"
     depends_on:
       - keycloak-postgres
     volumes:
       - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
+    ports:
+      - "8080:8080"
+      - "9000:9000"
+    healthcheck:
+      test: ["CMD-SHELL",
+        "exec 3<>/dev/tcp/127.0.0.1/9000; \
+     echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost:9000\r\nConnection: close\r\n\r\n' >&3; \
+     cat <&3 | grep -q '\"status\": \"UP\"' && exit 0 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   keycloak-postgres:
     image: postgres:16.3
