@@ -27,7 +27,7 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "Get room by Id", description = "Returns room by Id")
     @ApiResponses(value = {
@@ -54,7 +54,7 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomService.createRoom(request));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Update room", description = "Updates room by provided data")
     @ApiResponses(value = {
@@ -70,7 +70,7 @@ public class RoomController {
         return ResponseEntity.ok(roomService.updateRoom(id, request));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Delete room", description = "Deletes room by provided Id")
     @ApiResponses(value = {
@@ -82,7 +82,7 @@ public class RoomController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/roomPage")
+    @GetMapping("roomPage")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "Get page of rooms", description = "Returns rooms by provided filter")
     @ApiResponses(value = {

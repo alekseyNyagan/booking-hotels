@@ -41,7 +41,7 @@ public class HotelController {
         return ResponseEntity.ok(hotelService.findAllHotels());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "Get hotel by id", description = "Returns hotel by id")
     @ApiResponses(value = {
@@ -69,7 +69,7 @@ public class HotelController {
         return ResponseEntity.status(HttpStatus.CREATED).body(hotelService.createHotel(upsertHotelRequest));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Update hotel", description = "Updates hotel with provided data")
     @ApiResponses(value = {
@@ -85,7 +85,7 @@ public class HotelController {
         return ResponseEntity.ok(hotelService.updateHotel(id, upsertHotelRequest));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Delete hotel", description = "Deletes hotel by id")
     @ApiResponses(value = {
@@ -97,7 +97,7 @@ public class HotelController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/rate")
+    @PutMapping("rate")
     @Operation(summary = "Rate hotel", description = "Rate hotel by provided data")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Hotel rated successfully"),
@@ -110,7 +110,7 @@ public class HotelController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/hotelPage")
+    @GetMapping("hotelPage")
     @Operation(summary = "Get hotel page", description = "Returns hotel page by provided filter")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(

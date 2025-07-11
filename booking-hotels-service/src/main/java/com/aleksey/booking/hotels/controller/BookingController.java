@@ -43,7 +43,7 @@ public class BookingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(upsertBookingRequest, jwt));
     }
 
-    @GetMapping("/bookingPage")
+    @GetMapping("bookingPage")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Get page of bookings", description = "Return page of bookings by provided filter")
     @ApiResponses(value = {

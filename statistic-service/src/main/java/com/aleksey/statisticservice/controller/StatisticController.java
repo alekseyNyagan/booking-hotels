@@ -19,7 +19,7 @@ public class StatisticController {
 
     private final StatisticService statisticService;
 
-    @GetMapping("/export")
+    @GetMapping("export")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> exportStatistics() throws CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
         HttpHeaders headers = new HttpHeaders();
