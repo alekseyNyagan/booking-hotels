@@ -71,18 +71,16 @@ public class RoomSpecification implements Specification<Room> {
 
     public static Specification<Room> byAvailableDates(String arrivalDate, String departureDate) {
         return (root, query, criteriaBuilder) -> {
-            query.distinct(true);
+            LocalDate arrivalLocalDate = DateConverter.fromStringDateToLocalDate(arrivalDate);
+            LocalDate departureLocalDate = DateConverter.fromStringDateToLocalDate(departureDate);
 
-            LocalDate arrival = DateConverter.fromStringDateToLocalDate(arrivalDate);
-            LocalDate departure = DateConverter.fromStringDateToLocalDate(departureDate);
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<Room> subqueryRoomRoot = subquery.from(Room.class);
+            Join<Room, UnavailableDate> unavailableDateJoin = subqueryRoomRoot.join("unavailableDates");
+            subquery.select(subqueryRoomRoot.get("id"))
+                    .where(criteriaBuilder.between(unavailableDateJoin.get("date"), arrivalLocalDate, departureLocalDate));
 
-            Join<Room, UnavailableDate> join = root.join("unavailableDates", JoinType.LEFT);
-
-            Predicate dateInRange = criteriaBuilder.between(join.get("date"), arrival, departure);
-            Predicate noConflicts = criteriaBuilder.isNull(join.get("date"));
-            Predicate notBookedInRange = criteriaBuilder.not(dateInRange);
-
-            return criteriaBuilder.or(noConflicts, notBookedInRange);
+            return criteriaBuilder.not(root.get("id").in(subquery));
         };
     }
 
