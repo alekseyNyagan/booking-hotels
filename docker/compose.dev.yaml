@@ -1,8 +1,6 @@
 services:
   booking-hotels-service:
-    build:
-      context: ../
-      dockerfile: booking-hotels-service/Dockerfile
+    image: alekseynyagan607/booking-hotels-service:latest
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
@@ -32,9 +30,7 @@ services:
       - "8180:8180"
 
   user-service:
-    build:
-      context: ../
-      dockerfile: user-service/Dockerfile
+    image: alekseynyagan607/user-service:latest
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
@@ -63,9 +59,7 @@ services:
       - "8073:8073"
 
   statistic-service:
-    build:
-      context: ../
-      dockerfile: statistic-service/Dockerfile
+    image: alekseynyagan607/statistic-service:latest
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
@@ -102,9 +96,7 @@ services:
       file: services.yaml
 
   eureka-server:
-    build:
-      context: ../
-      dockerfile: eureka-server/Dockerfile
+    image: alekseynyagan607/eureka-server:latest
     ports:
       - "8070:8070"
     environment:
@@ -116,9 +108,7 @@ services:
         condition: service_healthy
 
   gateway-server:
-    build:
-      context: ../
-      dockerfile: gateway-server/Dockerfile
+    image: alekseynyagan607/gateway-server:latest
     ports:
       - "8072:8072"
     environment:

@@ -1,8 +1,6 @@
 services:
   config-server:
-    build:
-      context: ../
-      dockerfile: config-server/Dockerfile
+    image: alekseynyagan607/config-server:latest
     container_name: config-server
     ports:
       - "8071:8071"
@@ -26,7 +24,7 @@ services:
       POSTGRES_PASSWORD: postgres
 
   keycloak:
-    build: ./keycloak
+    image: alekseynyagan607/keycloak:latest
     container_name: keycloak
     command:
       - start
