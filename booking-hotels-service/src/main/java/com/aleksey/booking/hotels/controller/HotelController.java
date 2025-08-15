@@ -31,12 +31,6 @@ public class HotelController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "Get all hotels", description = "Returns list of all hotels")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(
-                    schema = @Schema(implementation = HotelListResponse.class)
-            ))
-    })
     public ResponseEntity<HotelListResponse> getAllHotels() {
         return ResponseEntity.ok(hotelService.findAllHotels());
     }
