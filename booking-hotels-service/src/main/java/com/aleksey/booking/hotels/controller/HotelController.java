@@ -44,12 +44,6 @@ public class HotelController {
     @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "Get hotel by id", description = "Returns hotel by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(
-                    schema = @Schema(implementation = HotelResponse.class)
-            )),
-            @ApiResponse(responseCode = "404", description = "Hotel not found")
-    })
     public ResponseEntity<HotelResponse> getHotelById(
             @Parameter(description = "Hotel id", required = true, example = "1") @PathVariable Long id) {
         return ResponseEntity.ok(hotelService.findById(id));
