@@ -30,13 +30,6 @@ public class BookingController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "Create new booking", description = "Create new booking by provided data")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Booking created successfully", content = @Content(
-                    schema = @Schema(implementation = BookingResponse.class)
-            )),
-            @ApiResponse(responseCode = "400", description = "Bad request")
-    })
     public ResponseEntity<BookingResponse> createBooking(
             @Parameter(description = "Data for creating new booking", required = true) @RequestBody @Valid UpsertBookingRequest upsertBookingRequest,
             @Parameter(description = "JWT token", required = true, hidden = true) @AuthenticationPrincipal Jwt jwt) {
