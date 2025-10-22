@@ -8,6 +8,7 @@ import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
 import com.aleksey.booking.hotels.kafka.model.StatisticModel;
 import com.aleksey.booking.hotels.mapper.BookingMapper;
 import com.aleksey.booking.hotels.model.Booking;
+import com.aleksey.booking.hotels.model.Hotel;
 import com.aleksey.booking.hotels.model.Room;
 import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.repository.BookingRepository;
@@ -24,7 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,8 +64,25 @@ public class BookingServiceImpl implements BookingService {
                     , arrivalDate
                     , departureDate);
             bookingRepository.save(booking);
+            Hotel hotel = rooms.getFirst().getHotel();
             Message<StatisticModel> message = MessageBuilder.withPayload(
-                    new StatisticModel(userId, arrivalDate, departureDate)).build();
+                    new StatisticModel(
+                            UUID.randomUUID(),
+                            userId,
+                            booking.getId(),
+                            hotel.getId(),
+                            hotel.getCity(),
+                            rooms.stream().map(Room::getId).toList(),
+                            rooms.size(),
+                            arrivalDate,
+                            departureDate,
+                            (int) ChronoUnit.DAYS.between(arrivalDate, departureDate),
+                            rooms.stream()
+                                    .map(Room::getCost)
+                                    .map(BigDecimal::valueOf)
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                                    .multiply(BigDecimal.valueOf(ChronoUnit.DAYS.between(arrivalDate, departureDate))),
+                            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))).build();
             streamBridge.send("producer-out-0", message);
             return bookingMapper.toDto(booking);
         }

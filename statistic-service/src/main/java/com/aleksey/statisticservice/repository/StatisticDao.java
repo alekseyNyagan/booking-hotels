@@ -1,4 +1,4 @@
-package com.aleksey.statisticservice.service;
+package com.aleksey.statisticservice.repository;
 
 import com.aleksey.statisticservice.api.response.*;
 import com.aleksey.statisticservice.kafka.model.StatisticModel;
@@ -6,8 +6,8 @@ import com.aleksey.statisticservice.kafka.model.StatisticModel;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface StatisticService {
-    void saveStatistic(StatisticModel statistic);
+public interface StatisticDao {
+    void save(StatisticModel statisticModel);
 
     List<DailyBookingStatResponse> getDailyBookings(LocalDate from, LocalDate to);
 
