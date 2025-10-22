@@ -46,7 +46,7 @@ public class SecurityConfig {
             HttpSecurity http,
             JwtConverter jwtAuthenticationConverter) throws Exception {
         return http
-                .securityMatcher("/statistic/**")
+                .securityMatcher("/api/v1/statistics/**")
                 .authorizeHttpRequests((auth) -> auth.anyRequest().hasAuthority("ROLE_ADMIN"))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
