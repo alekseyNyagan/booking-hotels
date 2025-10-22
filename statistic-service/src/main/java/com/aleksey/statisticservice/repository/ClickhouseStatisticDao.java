@@ -3,19 +3,17 @@ package com.aleksey.statisticservice.repository;
 import com.aleksey.statisticservice.api.response.*;
 import com.aleksey.statisticservice.kafka.model.StatisticModel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
 public class ClickhouseStatisticDao implements StatisticDao {
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final JdbcClient jdbcClient;
 
     @Override
     public List<DailyBookingStatResponse> getDailyBookings(LocalDate from, LocalDate to) {
@@ -27,16 +25,11 @@ public class ClickhouseStatisticDao implements StatisticDao {
             ORDER BY date
         """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("from", from)
-                .addValue("to", to);
-
-        return jdbcTemplate.query(sql, params, (rs, i) ->
-                new DailyBookingStatResponse(
-                        rs.getDate("date").toLocalDate(),
-                        rs.getLong("bookingsCount")
-                )
-        );
+        return jdbcClient.sql(sql)
+                .param("from", from)
+                .param("to", to)
+                .query(DailyBookingStatResponse.class)
+                .list();
     }
 
     @Override
@@ -49,16 +42,10 @@ public class ClickhouseStatisticDao implements StatisticDao {
             LIMIT :limit
         """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("limit", limit);
-
-        return jdbcTemplate.query(sql, params, (rs, i) ->
-                new UserStatResponse(
-                        UUID.fromString(rs.getString("user_id")),
-                        rs.getLong("bookingsCount"),
-                        rs.getBigDecimal("totalSpent")
-                )
-        );
+        return jdbcClient.sql(sql)
+                .param("limit", limit)
+                .query(UserStatResponse.class)
+                .list();
     }
 
     @Override
@@ -71,16 +58,11 @@ public class ClickhouseStatisticDao implements StatisticDao {
             ORDER BY totalRevenue DESC
         """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("from", from)
-                .addValue("to", to);
-
-        return jdbcTemplate.query(sql, params, (rs, i) ->
-                new RevenueByCityResponse(
-                        rs.getString("hotel_city"),
-                        rs.getBigDecimal("totalRevenue")
-                )
-        );
+        return jdbcClient.sql(sql)
+                .param("from", from)
+                .param("to", to)
+                .query(RevenueByCityResponse.class)
+                .list();
     }
 
     @Override
@@ -93,16 +75,11 @@ public class ClickhouseStatisticDao implements StatisticDao {
             ORDER BY totalRevenue DESC
         """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("from", from)
-                .addValue("to", to);
-
-        return jdbcTemplate.query(sql, params, (rs, i) ->
-                new RevenueByHotelResponse(
-                        rs.getLong("hotel_id"),
-                        rs.getBigDecimal("totalRevenue")
-                )
-        );
+        return jdbcClient.sql(sql)
+                .param("from", from)
+                .param("to", to)
+                .query(RevenueByHotelResponse.class)
+                .list();
     }
 
     @Override
@@ -118,19 +95,11 @@ public class ClickhouseStatisticDao implements StatisticDao {
             WHERE created_at BETWEEN :from AND :to
         """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("from", from)
-                .addValue("to", to);
-
-        return jdbcTemplate.queryForObject(sql, params, (rs, i) ->
-                new SummaryResponse(
-                        rs.getLong("totalBookings"),
-                        rs.getLong("uniqueUsers"),
-                        rs.getDouble("averageStayNights"),
-                        rs.getBigDecimal("averageBookingCost"),
-                        rs.getBigDecimal("totalRevenue")
-                )
-        );
+        return jdbcClient.sql(sql)
+                .param("from", from)
+                .param("to", to)
+                .query(SummaryResponse.class)
+                .single();
     }
 
     @Override
@@ -165,20 +134,19 @@ public class ClickhouseStatisticDao implements StatisticDao {
             )
         """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("event_id", statisticModel.eventId())
-                .addValue("booking_id", statisticModel.bookingId())
-                .addValue("user_id", statisticModel.userId())
-                .addValue("hotel_id", statisticModel.hotelId())
-                .addValue("hotel_city", statisticModel.hotelCity())
-                .addValue("room_ids", statisticModel.roomIds().toArray())
-                .addValue("rooms_count", statisticModel.roomsCount())
-                .addValue("arrival_date", statisticModel.arrivalDate())
-                .addValue("departure_date", statisticModel.departureDate())
-                .addValue("total_nights", statisticModel.totalNights())
-                .addValue("total_cost", statisticModel.totalCost())
-                .addValue("created_at", statisticModel.createdAt());
-
-        jdbcTemplate.update(sql, params);
+        jdbcClient.sql(sql)
+                .param("event_id", statisticModel.eventId())
+                .param("booking_id", statisticModel.bookingId())
+                .param("user_id", statisticModel.userId())
+                .param("hotel_id", statisticModel.hotelId())
+                .param("hotel_city", statisticModel.hotelCity())
+                .param("room_ids", statisticModel.roomIds().toArray())
+                .param("rooms_count", statisticModel.roomsCount())
+                .param("arrival_date", statisticModel.arrivalDate())
+                .param("departure_date", statisticModel.departureDate())
+                .param("total_nights", statisticModel.totalNights())
+                .param("total_cost", statisticModel.totalCost())
+                .param("created_at", statisticModel.createdAt())
+                .update();
     }
 }
