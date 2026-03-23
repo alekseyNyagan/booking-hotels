@@ -6,12 +6,15 @@ import com.aleksey.booking.hotels.api.response.HotelListResponse;
 import com.aleksey.booking.hotels.api.response.HotelPaginationResponse;
 import com.aleksey.booking.hotels.api.response.HotelResponse;
 import com.aleksey.booking.hotels.api.response.RateRequest;
+import com.aleksey.booking.hotels.config.SecurityConfig;
+import com.aleksey.booking.hotels.converter.JwtConverter;
+import com.aleksey.booking.hotels.jwt.JwtAccessDeniedHandler;
 import com.aleksey.booking.hotels.service.HotelService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,8 +26,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(HotelController.class)
+@Import(SecurityConfig.class)
 class HotelControllerTest {
 
     @Autowired
@@ -32,6 +35,12 @@ class HotelControllerTest {
 
     @MockitoBean
     private HotelService hotelService;
+
+    @MockitoBean
+    private JwtConverter jwtConverter;
+
+    @MockitoBean
+    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -131,14 +140,13 @@ class HotelControllerTest {
 
     @Test
     void testHotelPage() throws Exception {
-        HotelFilter hotelFilter = mock(HotelFilter.class);
         HotelPaginationResponse hotelPaginationResponse = mock(HotelPaginationResponse.class);
         when(hotelService.filterBy(any(HotelFilter.class))).thenReturn(hotelPaginationResponse);
 
         mockMvc.perform(get("/api/hotel/hotelPage")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER")))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hotelFilter)))
+                        .param("pageSize", "10")
+                        .param("pageNumber", "0"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 

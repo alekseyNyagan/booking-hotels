@@ -112,7 +112,17 @@ public class HotelController {
             ))
     })
     public ResponseEntity<HotelPaginationResponse> hotelPage(
-            @Parameter(description = "Filter for hotel searching", required = true) @RequestBody HotelFilter filter) {
+            @Parameter(description = "Page size", example = "10") @RequestParam Integer pageSize,
+            @Parameter(description = "Page number", example = "0") @RequestParam Integer pageNumber,
+            @Parameter(description = "Hotel id") @RequestParam(required = false) Long hotelId,
+            @Parameter(description = "Hotel name") @RequestParam(required = false) String hotelName,
+            @Parameter(description = "Title") @RequestParam(required = false) String title,
+            @Parameter(description = "City") @RequestParam(required = false) String city,
+            @Parameter(description = "Address") @RequestParam(required = false) String address,
+            @Parameter(description = "Max distance from center, km") @RequestParam(required = false) Double distance,
+            @Parameter(description = "Min rating") @RequestParam(required = false) Double rating,
+            @Parameter(description = "Min marks count") @RequestParam(required = false) Integer marksCount) {
+        HotelFilter filter = new HotelFilter(pageSize, pageNumber, hotelId, hotelName, title, city, address, distance, rating, marksCount);
         return ResponseEntity.ok(hotelService.filterBy(filter));
     }
 }

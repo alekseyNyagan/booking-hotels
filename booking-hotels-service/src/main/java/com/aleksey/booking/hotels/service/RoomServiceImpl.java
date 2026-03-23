@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,15 +31,14 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomResponse getById(Long id) {
-        Optional<Room> room = roomRepository.findById(id);
-        return roomMapper.toDto(room.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Комната с id {0} не найдена", id))));
+        return roomMapper.toDto(roomRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Комната с id {0} не найдена", id))));
     }
 
     @Override
     @Transactional
     public RoomResponse createRoom(UpsertRoomRequest upsertRoomRequest) {
-        Hotel hotel = hotelRepository.findById(upsertRoomRequest.hotelId()).orElseThrow(() ->
-                new EntityNotFoundException("Отель с id " + upsertRoomRequest.hotelId() + " не найден!"));
+        Hotel hotel = findHotelById(upsertRoomRequest.hotelId());
         Room room = roomMapper.toEntity(upsertRoomRequest, hotel);
         roomRepository.save(room);
         return roomMapper.toDto(room);
@@ -49,8 +47,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public RoomResponse updateRoom(Long id, UpsertRoomRequest upsertRoomRequest) {
-        Hotel hotel = hotelRepository.findById(upsertRoomRequest.hotelId()).orElseThrow(() ->
-                new EntityNotFoundException("Отель с id " + upsertRoomRequest.hotelId() + " не найден!"));
+        Hotel hotel = findHotelById(upsertRoomRequest.hotelId());
         Room room = roomMapper.toEntity(id, upsertRoomRequest, hotel);
         roomRepository.save(room);
         return roomMapper.toDto(room);
@@ -67,5 +64,11 @@ public class RoomServiceImpl implements RoomService {
         Page<Room> rooms = roomRepository.findAll(new RoomSpecification(filter),
                 PageRequest.of(filter.pageNumber(), filter.pageSize()));
         return roomMapper.roomListToRoomPaginationResponse(rooms.getTotalElements(), rooms.getContent());
+    }
+
+    private Hotel findHotelById(Long hotelId) {
+        return hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        MessageFormat.format("Отель с id {0} не найден!", hotelId)));
     }
 }

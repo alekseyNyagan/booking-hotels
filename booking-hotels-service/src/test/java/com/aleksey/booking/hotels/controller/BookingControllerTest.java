@@ -3,12 +3,15 @@ package com.aleksey.booking.hotels.controller;
 import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
 import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
+import com.aleksey.booking.hotels.config.SecurityConfig;
+import com.aleksey.booking.hotels.converter.JwtConverter;
+import com.aleksey.booking.hotels.jwt.JwtAccessDeniedHandler;
 import com.aleksey.booking.hotels.service.BookingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -18,7 +21,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.invocation.InvocationOnMock;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,8 +33,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
+@WebMvcTest(BookingController.class)
+@Import(SecurityConfig.class)
 class BookingControllerTest {
 
     @Autowired
@@ -35,6 +42,21 @@ class BookingControllerTest {
 
     @MockitoBean
     private BookingService bookingService;
+
+    @MockitoBean
+    private JwtConverter jwtConverter;
+
+    @MockitoBean
+    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
+    @BeforeEach
+    void setupAccessDeniedHandler() throws Exception {
+        doAnswer((InvocationOnMock inv) -> {
+            HttpServletResponse response = inv.getArgument(1);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }).when(jwtAccessDeniedHandler).handle(any(), any(), any());
+    }
 
     /**
      * Given a user with the role of "USER" is authenticated<br>

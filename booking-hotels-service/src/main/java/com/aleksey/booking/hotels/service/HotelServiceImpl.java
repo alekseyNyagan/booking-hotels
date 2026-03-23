@@ -12,32 +12,27 @@ import com.aleksey.booking.hotels.model.Hotel;
 import com.aleksey.booking.hotels.repository.HotelRepository;
 import com.aleksey.booking.hotels.repository.HotelSpecification;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
 
+    private static final String HOTEL_NOT_FOUND_MSG = "Отель не найден!";
+
     private final HotelRepository hotelRepository;
-
     private final HotelMapper hotelMapper;
-
-    @Autowired
-    public HotelServiceImpl(HotelRepository hotelRepository, HotelMapper hotelMapper) {
-        this.hotelRepository = hotelRepository;
-        this.hotelMapper = hotelMapper;
-    }
 
     @Override
     public HotelResponse findById(Long id) {
-        Optional<Hotel> hotel = hotelRepository.findById(id);
-        return hotelMapper.toDto(hotel.orElseThrow(() -> new EntityNotFoundException("Отель не найден!")));
+        return hotelMapper.toDto(hotelRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(HOTEL_NOT_FOUND_MSG)));
     }
 
     @Override
@@ -66,8 +61,8 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public void rateHotel(RateRequest rateRequest) {
-        Hotel hotel = hotelRepository.findById(rateRequest.hotelId()).orElseThrow(() ->
-                new EntityNotFoundException("Отель не найден!"));
+        Hotel hotel = hotelRepository.findById(rateRequest.hotelId())
+                .orElseThrow(() -> new EntityNotFoundException(HOTEL_NOT_FOUND_MSG));
 
         Byte newMark = rateRequest.newMark();
         double rating = hotel.getRating();
