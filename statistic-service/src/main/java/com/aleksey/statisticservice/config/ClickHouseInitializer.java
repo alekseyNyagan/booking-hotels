@@ -1,6 +1,7 @@
 package com.aleksey.statisticservice.config;
 
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ public class ClickHouseInitializer implements CommandLineRunner {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void run(String... args) {
+    public void run(String @NonNull ... args) {
         jdbcTemplate.execute("""
             CREATE TABLE IF NOT EXISTS booking_statistics (
                 event_id UUID,

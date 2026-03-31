@@ -2,13 +2,11 @@ package com.aleksey.booking.hotels.repository;
 
 import com.aleksey.booking.hotels.api.request.HotelFilter;
 import com.aleksey.booking.hotels.model.Hotel;
-import org.springframework.data.jpa.domain.Specification;
-
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.lang.Nullable;
+import org.springframework.data.jpa.domain.Specification;
 
 public class HotelSpecification implements Specification<Hotel> {
 
@@ -19,7 +17,7 @@ public class HotelSpecification implements Specification<Hotel> {
     }
 
     @Override
-    public Predicate toPredicate(Root<Hotel> root, @Nullable CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(Root<Hotel> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         Predicate predicate = criteriaBuilder.conjunction();
 
         if (filter.hotelName() != null) {
@@ -58,34 +56,34 @@ public class HotelSpecification implements Specification<Hotel> {
     }
 
     public static Specification<Hotel> byHotelName(String hotelName) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("name"), hotelName);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("name"), hotelName);
     }
 
     public static Specification<Hotel> byHotelId(Long hotelId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), hotelId);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), hotelId);
     }
 
     public static Specification<Hotel> byTitle(String title) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("title"), title);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("title"), title);
     }
 
     public static Specification<Hotel> byCity(String city) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("city"), city);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("city"), city);
     }
 
     public static Specification<Hotel> byAddress(String address) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("address"), address);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("address"), address);
     }
 
     public static Specification<Hotel> byDistance(Double distance) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("distance"), distance);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("distance"), distance);
     }
 
     public static Specification<Hotel> byRating(Double rating) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("rating"), rating);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("rating"), rating);
     }
 
     public static Specification<Hotel> byMarksCount(Integer marksCount) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("marksCount"), marksCount);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("marksCount"), marksCount);
     }
 }

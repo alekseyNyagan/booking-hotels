@@ -29,10 +29,10 @@ public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity httpSecurity) {
         httpSecurity
                 .securityMatcher("/actuator/**")
-                .authorizeHttpRequests((auth) -> auth.anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .headers(AbstractHttpConfigurer::disable)
@@ -44,10 +44,10 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            JwtConverter jwtAuthenticationConverter) throws Exception {
+            JwtConverter jwtAuthenticationConverter) {
         return http
                 .securityMatcher("/api/v1/statistics/**")
-                .authorizeHttpRequests((auth) -> auth.anyRequest().hasAuthority("ROLE_ADMIN"))
+                .authorizeHttpRequests(auth -> auth.anyRequest().hasAuthority("ROLE_ADMIN"))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer ->

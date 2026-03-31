@@ -6,7 +6,6 @@ import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.utils.DateConverter;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
 
@@ -19,7 +18,7 @@ public class RoomSpecification implements Specification<Room> {
     }
 
     @Override
-    public Predicate toPredicate(Root<Room> root, @Nullable CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(Root<Room> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         Predicate predicate = criteriaBuilder.conjunction();
 
         if (filter.roomId() != null) {
@@ -50,23 +49,23 @@ public class RoomSpecification implements Specification<Room> {
     }
 
     public static Specification<Room> byRoomId(Long roomId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), roomId);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), roomId);
     }
 
     public static Specification<Room> byCostRange(Integer minCost, Integer maxCost) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("cost"), minCost, maxCost);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.between(root.get("cost"), minCost, maxCost);
     }
 
     public static Specification<Room> byMinCostGraterThanOrEqualTo(Integer minCost) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get("cost"), minCost);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get("cost"), minCost);
     }
 
     public static Specification<Room> byMaxCostLesserThanOrEqualTo(Integer maxCost) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get("cost"), maxCost);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get("cost"), maxCost);
     }
 
     public static Specification<Room> byCountOfVisitors(Integer countOfVisitors) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("max_count_of_people"), countOfVisitors);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("max_count_of_people"), countOfVisitors);
     }
 
     public static Specification<Room> byAvailableDates(String arrivalDate, String departureDate) {
@@ -85,6 +84,6 @@ public class RoomSpecification implements Specification<Room> {
     }
 
     public static Specification<Room> byHotelId(Long hotelId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("hotel").get("id"), hotelId);
+        return (root, _, criteriaBuilder) -> criteriaBuilder.equal(root.get("hotel").get("id"), hotelId);
     }
 }

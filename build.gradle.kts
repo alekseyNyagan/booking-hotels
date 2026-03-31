@@ -1,10 +1,10 @@
 plugins {
     id("base")
-    id("org.springframework.boot") version "3.5.3" apply false
+    id("org.springframework.boot") version "4.0.5" apply false
     id("io.spring.dependency-management") version "1.1.7" apply false
 }
 
-val springCloudVersion = "2025.0.0"
+val springCloudVersion = "2025.1.1"
 
 subprojects {
     apply(plugin = "java")
@@ -16,7 +16,7 @@ subprojects {
 
     extensions.configure<JavaPluginExtension> {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
+            languageVersion = JavaLanguageVersion.of(25)
         }
     }
 

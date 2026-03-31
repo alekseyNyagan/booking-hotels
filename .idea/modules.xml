@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/booking-hotels-service/booking.hotels.booking-hotels-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/booking-hotels-service/booking.hotels.booking-hotels-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway-server/booking.hotels.gateway-server.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway-server/booking.hotels.gateway-server.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/statistic-service/booking.hotels.statistic-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/statistic-service/booking.hotels.statistic-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user-service/booking.hotels.user-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/user-service/booking.hotels.user-service.main.iml" />
+    </modules>
+  </component>
+</project>
