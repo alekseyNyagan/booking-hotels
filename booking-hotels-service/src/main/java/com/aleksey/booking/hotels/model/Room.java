@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -57,6 +58,9 @@ public class Room {
     private Booking booking;
 
     public void addUnavailableDates(Set<UnavailableDate> unavailableDates) {
+        if (this.unavailableDates == null) {
+            this.unavailableDates = new HashSet<>();
+        }
         this.unavailableDates.addAll(unavailableDates);
     }
 

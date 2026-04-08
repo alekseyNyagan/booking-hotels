@@ -29,7 +29,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
         validateRoomsAvailability(rooms, arrivalDate, departureDate);
 
         UUID userId = UUID.fromString(jwt.getSubject());
-        Booking booking = bookingMapper.toEntity(userId, rooms, arrivalDate, departureDate);
+        Booking booking = prepareBooking(userId, rooms, arrivalDate, departureDate);
         bookingRepository.save(booking);
 
         streamBridge.send(KAFKA_PRODUCER_BINDING, buildStatisticMessage(booking, rooms, userId, arrivalDate, departureDate));
@@ -69,6 +71,21 @@ public class BookingServiceImpl implements BookingService {
     public BookingPaginationResponse getBookingPage(Integer pageSize, Integer pageNumber) {
         Page<Booking> bookings = bookingRepository.findAll(PageRequest.of(pageNumber, pageSize));
         return bookingMapper.bookingListToBookingPaginationResponse(bookings.getTotalElements(), bookings.getContent());
+    }
+
+    private Booking prepareBooking(UUID userId, List<Room> rooms, LocalDate arrivalDate, LocalDate departureDate) {
+        Set<UnavailableDate> unavailableDates = arrivalDate.datesUntil(departureDate).map(localDate -> {
+            UnavailableDate unavailableDate = new UnavailableDate();
+            unavailableDate.setDate(localDate);
+            return unavailableDate;
+        }).collect(Collectors.toSet());
+        rooms.forEach(room -> room.addUnavailableDates(unavailableDates));
+        Booking booking = new Booking();
+        booking.setArrivalDate(arrivalDate);
+        booking.setDepartureDate(departureDate);
+        booking.setRooms(rooms);
+        booking.setUserId(userId);
+        return booking;
     }
 
     private void validateRoomsAvailability(List<Room> rooms, LocalDate arrivalDate, LocalDate departureDate) {

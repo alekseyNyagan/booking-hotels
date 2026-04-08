@@ -8,12 +8,14 @@ import com.aleksey.booking.hotels.api.response.RoomInfo;
 import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
 import com.aleksey.booking.hotels.mapper.BookingMapper;
 import com.aleksey.booking.hotels.model.Booking;
+import com.aleksey.booking.hotels.model.Hotel;
 import com.aleksey.booking.hotels.model.Room;
 import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,7 +28,7 @@ import org.springframework.messaging.Message;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -77,41 +79,62 @@ class BookingServiceImplTest {
                 List.of(1L, 2L)
         );
 
+        Hotel hotel = new Hotel();
+        hotel.setId(1L);
+        hotel.setName("Test Hotel");
+        hotel.setCity("Test City");
+
         Room room1 = new Room();
         room1.setId(1L);
-        room1.setUnavailableDates(Collections.emptySet());
+        room1.setName("Room 1");
+        room1.setDescription("A cozy room");
+        room1.setNumber("101");
+        room1.setCost(100);
+        room1.setMaxCountOfPeople(2);
+        room1.setHotel(hotel);
+        room1.setUnavailableDates(new HashSet<>());
 
         Room room2 = new Room();
         room2.setId(2L);
-        room2.setUnavailableDates(Collections.emptySet());
+        room2.setName("Room 2");
+        room2.setDescription("A spacious room");
+        room2.setNumber("102");
+        room2.setCost(150);
+        room2.setMaxCountOfPeople(3);
+        room2.setHotel(hotel);
+        room2.setUnavailableDates(new HashSet<>());
 
         when(roomRepository.findAllByIdIn(request.roomIds())).thenReturn(List.of(room1, room2));
 
-        Booking booking = new Booking();
-        booking.setId(1L);
-        booking.setUserId(userId);
-        booking.setRooms(List.of(room1, room2));
-        booking.setArrivalDate(LocalDate.parse("2023-10-01"));
-        booking.setDepartureDate(LocalDate.parse("2023-10-05"));
-
-        when(bookingMapper.toEntity(userId, List.of(room1, room2), LocalDate.parse("2023-10-01"), LocalDate.parse("2023-10-05")))
-                .thenReturn(booking);
+        Booking savedBooking = new Booking();
+        savedBooking.setId(1L);
+        when(bookingRepository.save(any(Booking.class))).thenReturn(savedBooking);
 
         BookingResponse bookingResponse = new BookingResponse(
                 1L, LocalDate.parse("2023-10-01"),
                 LocalDate.parse("2023-10-05"),
-                List.of(new RoomInfo(1L, null, null, null, null, null, null),
-                        new RoomInfo(2L, null, null, null, null, null, null)),
+                List.of(new RoomInfo(1L, "Room 1", "A cozy room", "101", 100, 2, 1L),
+                        new RoomInfo(2L, "Room 2", "A spacious room", "102", 150, 3, 1L)),
                 userId
         );
-        when(bookingMapper.toDto(booking)).thenReturn(bookingResponse);
+        when(bookingMapper.toDto(any(Booking.class))).thenReturn(bookingResponse);
 
         BookingResponse result = bookingService.createBooking(request, jwt);
 
         assertNotNull(result);
         assertEquals(1L, result.id());
-        verify(bookingRepository, times(1)).save(booking);
+
+        ArgumentCaptor<Booking> bookingArgumentCaptor = ArgumentCaptor.forClass(Booking.class);
+        verify(bookingRepository, times(1)).save(bookingArgumentCaptor.capture());
         verify(streamBridge, times(1)).send(anyString(), any(Message.class));
+
+        Booking capturedBooking = bookingArgumentCaptor.getValue();
+        assertEquals(userId, capturedBooking.getUserId());
+        assertEquals(LocalDate.parse("2023-10-01"), capturedBooking.getArrivalDate());
+        assertEquals(LocalDate.parse("2023-10-05"), capturedBooking.getDepartureDate());
+        assertEquals(2, capturedBooking.getRooms().size());
+        assertTrue(capturedBooking.getRooms().getFirst().getUnavailableDates().stream()
+                .anyMatch(d -> d.getDate().equals(LocalDate.parse("2023-10-01"))));
     }
 
     /**
