@@ -24,7 +24,6 @@ spring:
           jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:8080}/realms/booking-hotels-realm/protocol/openid-connect/certs
   cloud:
     stream:
-      output-bindings: producer
       bindings:
         producer-out-0:
           destination: statistic
