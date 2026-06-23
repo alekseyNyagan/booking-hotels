@@ -24,7 +24,7 @@ dependencies {
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:3.5.1")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("com.clickhouse:clickhouse-jdbc:0.9.2")
+    implementation("com.clickhouse:clickhouse-jdbc-all:0.9.8")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
