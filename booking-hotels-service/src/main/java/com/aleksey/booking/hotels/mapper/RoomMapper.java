@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public interface RoomMapper {
     @Mapping(source = "upsertRoomRequest.name", target = "name")
     @Mapping(target = "unavailableDates", expression = "java(new java.util.HashSet<>())")
+    @Mapping(target = "id", ignore = true)
     Room toEntity(UpsertRoomRequest upsertRoomRequest, Hotel hotel);
 
     @Mapping(source = "roomId", target = "id")
