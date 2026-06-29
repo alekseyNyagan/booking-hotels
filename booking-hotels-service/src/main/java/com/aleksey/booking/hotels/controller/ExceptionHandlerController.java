@@ -6,6 +6,7 @@ import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -48,10 +49,22 @@ public class ExceptionHandlerController {
         return buildResponse(HttpStatus.BAD_REQUEST, ex);
     }
 
+    @ExceptionHandler(PessimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handlePessimisticLockException() {
+        return buildResponse(HttpStatus.CONFLICT, "Выбранные комнаты в данный момент оформляются другим пользователем. Пожалуйста, повторите попытку позже.");
+    }
+
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus httpStatus, Exception ex) {
         return ResponseEntity.status(httpStatus)
                 .body(ErrorResponse.builder()
                         .errorMessage(ex.getMessage())
+                        .build());
+    }
+
+    private ResponseEntity<ErrorResponse> buildResponse(HttpStatus httpStatus, String message) {
+        return ResponseEntity.status(httpStatus)
+                .body(ErrorResponse.builder()
+                        .errorMessage(message)
                         .build());
     }
 }
