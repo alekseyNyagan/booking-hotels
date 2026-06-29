@@ -22,6 +22,8 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -62,7 +64,15 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = prepareBooking(userId, rooms, arrivalDate, departureDate);
         bookingRepository.save(booking);
 
-        streamBridge.send(KAFKA_PRODUCER_BINDING, buildStatisticMessage(booking, rooms, userId, arrivalDate, departureDate));
+        var statisticMessage = buildStatisticMessage(booking, rooms, userId, arrivalDate, departureDate);
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                streamBridge.send(KAFKA_PRODUCER_BINDING, statisticMessage);
+            }
+        });
+
         return bookingMapper.toDto(booking);
     }
 
