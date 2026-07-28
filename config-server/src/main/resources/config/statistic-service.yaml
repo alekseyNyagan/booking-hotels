@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.clickhouse.jdbc.ClickHouseDriver
-    url: jdbc:clickhouse://${CLICKHOUSE_HOST:clickhouse}:${CLICKHOUSE_PORT:8123}/${CLICKHOUSE_DB_NAME:analytics}
+    url: jdbc:clickhouse://${CLICKHOUSE_HOST:localhost}:${CLICKHOUSE_PORT:8123}/${CLICKHOUSE_DB_NAME:analytics}
     username: ${CLICKHOUSE_USERNAME:analytics_user}
     password: ${CLICKHOUSE_PASSWORD:analytics_pass}
   security:
@@ -16,7 +16,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: ${KAFKA_BROKERS:kafka}:${KAFKA_PORT:9092}
+          brokers: ${KAFKA_BROKERS:localhost}:${KAFKA_PORT:9092}
           enableObservation: true
       bindings:
         consumer-in-0:
