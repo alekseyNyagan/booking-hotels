@@ -145,6 +145,16 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_USERS_ALLOW_SIGN_UP: true
 
+  redis:
+    image: redis:latest
+    restart: "no"
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
 volumes:
   postgres_data:
     driver: local

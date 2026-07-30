@@ -13,6 +13,10 @@ import com.aleksey.booking.hotels.repository.HotelRepository;
 import com.aleksey.booking.hotels.repository.HotelSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,8 @@ public class HotelServiceImpl implements HotelService {
     private final HotelRepository hotelRepository;
     private final HotelMapper hotelMapper;
 
+    @Cacheable(value = "hotels", key = "#id")
+    @CacheEvict(value = "hotel_lists", allEntries = true)
     @Override
     public HotelResponse findById(Long id) {
         return hotelMapper.toDto(hotelRepository.findById(id)
@@ -42,6 +48,8 @@ public class HotelServiceImpl implements HotelService {
         return hotelMapper.toDto(hotel);
     }
 
+    @CachePut(value = "hotels", key = "#id")
+    @CacheEvict(value = "hotel_lists", allEntries = true)
     @Override
     public HotelResponse updateHotel(Long id, UpsertHotelRequest upsertHotelRequest) {
         Hotel hotel = hotelMapper.toEntity(id, upsertHotelRequest);
@@ -49,11 +57,16 @@ public class HotelServiceImpl implements HotelService {
         return hotelMapper.toDto(hotel);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "hotels", key = "#id"),
+            @CacheEvict(value = "hotel_lists", allEntries = true)
+    })
     @Override
     public void deleteHotel(Long id) {
         hotelRepository.deleteById(id);
     }
 
+    @Cacheable(value = "hotel_lists", key = "'all'")
     @Override
     public HotelListResponse findAllHotels() {
         return hotelMapper.hotelListToHotelListResponse(hotelRepository.findAll());

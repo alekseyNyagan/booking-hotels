@@ -12,6 +12,9 @@ import com.aleksey.booking.hotels.repository.RoomRepository;
 import com.aleksey.booking.hotels.repository.RoomSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,7 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomMapper roomMapper;
 
+    @Cacheable(value = "rooms", key = "#id")
     @Override
     public RoomResponse getById(Long id) {
         return roomMapper.toDto(roomRepository.findById(id)
@@ -44,6 +48,7 @@ public class RoomServiceImpl implements RoomService {
         return roomMapper.toDto(room);
     }
 
+    @CachePut(value = "rooms", key = "#id")
     @Override
     @Transactional
     public RoomResponse updateRoom(Long id, UpsertRoomRequest upsertRoomRequest) {
@@ -53,6 +58,7 @@ public class RoomServiceImpl implements RoomService {
         return roomMapper.toDto(room);
     }
 
+    @CacheEvict(value = "rooms", key = "#id")
     @Override
     public void deleteRoom(Long id) {
         roomRepository.deleteById(id);

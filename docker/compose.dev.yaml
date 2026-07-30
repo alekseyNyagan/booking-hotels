@@ -17,6 +17,8 @@ services:
       - ZIPKIN_PORT=9411
       - KAFKA_BROKERS=kafka
       - KAFKA_PORT=9092
+      - DATA_REDIS_HOST=redis
+      - DATA_REDIS_PORT=6379
     depends_on:
       postgres:
         condition: service_started
@@ -25,6 +27,8 @@ services:
       logstash:
         condition: service_started
       config-server:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     ports:
       - "8180:8180"
@@ -246,6 +250,13 @@ services:
     volumes:
       - clickhouse_data:/var/lib/clickhouse
       - clickhouse_logs:/var/log/clickhouse-server
+
+  redis:
+    extends:
+      service: redis
+      file: services.yaml
+    ports:
+      - "6379:6379"
 
 volumes:
   pgadmin_data:
