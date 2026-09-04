@@ -169,7 +169,6 @@ services:
       file: services.yaml
     ports:
       - "9200:9200"
-      - "9300:9300"
 
   kibana:
     extends:
