@@ -16,7 +16,7 @@ services:
       - ZIPKIN_HOST=zipkin
       - ZIPKIN_PORT=9411
       - KAFKA_BROKERS=kafka
-      - KAFKA_PORT=9092
+      - KAFKA_PORT=9094
       - DATA_REDIS_HOST=redis
       - DATA_REDIS_PORT=6379
     depends_on:
@@ -80,7 +80,7 @@ services:
       - CLICKHOUSE_USER=analytics_user
       - CLICKHOUSE_PASSWORD=analytics_pass
       - KAFKA_BROKERS=kafka
-      - KAFKA_PORT=9092
+      - KAFKA_PORT=9094
     depends_on:
       clickhouse:
         condition: service_started
@@ -155,19 +155,13 @@ services:
     ports:
       - "8080:8080"
 
-  zookeeper:
-    extends:
-      service: zookeeper
-      file: services.yaml
-    ports:
-      - "2181:2181"
-
   kafka:
     extends:
       service: kafka
       file: services.yaml
     ports:
       - "9092:9092"
+      - "9094:9094"
 
   elasticsearch:
     extends:

@@ -16,6 +16,8 @@ spring:
     stream:
       kafka:
         binder:
+          configuration:
+            group.protocol: consumer
           brokers: ${KAFKA_BROKERS:localhost}:${KAFKA_PORT:9092}
           enableObservation: true
       bindings:
