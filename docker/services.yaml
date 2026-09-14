@@ -16,7 +16,7 @@ services:
       retries: 5
 
   postgres:
-    image: postgres:16.3
+    image: postgres:18.6
     container_name: postgres
     environment:
       POSTGRES_DB: booking_hotels
@@ -37,8 +37,8 @@ services:
       KC_DB_URL_DATABASE: keycloakdb
       KC_DB_USERNAME: keycloakuser
       KC_DB_PASSWORD: keycloakpass
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: adminpass
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: adminpass
       KC_HTTP_ENABLED: "true"
       KC_HTTP_PORT: 8080
       KC_MANAGEMENT_ENABLED: "true"
@@ -61,56 +61,54 @@ services:
       start_period: 15s
 
   keycloak-postgres:
-    image: postgres:16.3
+    image: postgres:18.6
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     container_name: keycloak-postgres
     environment:
       POSTGRES_DB: keycloakdb
       POSTGRES_USER: keycloakuser
       POSTGRES_PASSWORD: keycloakpass
 
-  zookeeper:
-    image: wurstmeister/zookeeper:latest
-
   kafka:
-    image: wurstmeister/kafka:latest
+    image: apache/kafka:4.3.1
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker, controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://kafka:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CLUSTER_ID: 4L62ydkiT9SIhxM7vgcUNw
+      KAFKA_GROUP_COORDINATOR_NEW_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_CREATE_TOPICS: "statistic:1:1"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-    depends_on:
-      - zookeeper
 
   elasticsearch:
-    image: elasticsearch:8.15.0
+    image: elasticsearch:9.5.3
     container_name: elasticsearch
     environment:
       - ES_JAVA_OPTS=-Xms256m -Xmx256m
-      - xpack.security.enabled=false
       - discovery.type=single-node
       - cluster.routing.allocation.disk.watermark.low=600mb
       - cluster.routing.allocation.disk.watermark.high=500mb
       - cluster.routing.allocation.disk.watermark.flood_stage=400mb
+    command: elasticsearch -E xpack.security.enabled=false
     volumes:
       - esdata1:/usr/share/elasticsearch/data
 
   kibana:
-    image: kibana:8.15.0
-    environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9300
+    image: kibana:9.5.3
     depends_on:
       - elasticsearch
 
   logstash:
-    image: logstash:8.15.0
+    image: logstash:9.5.3
     container_name: logstash
     command: logstash -f /etc/logstash/conf.d/logstash.conf
     volumes:
@@ -123,7 +121,7 @@ services:
     container_name: zipkin
     environment:
       - STORAGE_TYPE=elasticsearch
-      - "ES_HOSTS=elasticsearch:9300"
+      - "ES_HOSTS=elasticsearch:9200"
     depends_on:
       - elasticsearch
 
