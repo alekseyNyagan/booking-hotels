@@ -1,0 +1,18 @@
+[versions]
+springDoc = "3.1.0"
+mapstruct = "1.6.3"
+logbacEncoder = "9.0"
+commonsCodec = "1.22.1"
+jsonOrg = "20260814"
+clickhouse = "0.10.0"
+keycloakClient = "25.0.6"
+
+[libraries]
+springdoc-openapi = {module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springDoc"}
+mapstruct-core = {module = "org.mapstruct:mapstruct", version.ref = "mapstruct"}
+mapstruct-processor = {module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct"}
+logstash-logback-encoder = {module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbacEncoder"}
+commons-codec = {module = "commons-codec:commons-codec", version.ref = "commonsCodec"}
+json-org = {module = "org.json:json", version.ref = "jsonOrg"}
+clickhouse-jdbc = {module = "com.clickhouse:clickhouse-jdbc-all", version.ref = "clickhouse"}
+keycloak-admin-client = {module = "org.keycloak:keycloak-admin-client", version.ref = "keycloakClient"}
