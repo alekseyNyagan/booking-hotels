@@ -38,4 +38,12 @@ subprojects {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
+
+    plugins.withType<org.springframework.boot.gradle.plugin.SpringBootPlugin> {
+        tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootBuildImage> {
+            imageName.set("alekseynyagan607/${project.name}:latest")
+            builder.set("paketobuildpacks/builder-jammy-base:latest")
+            environment.set(mapOf("BP_JVM_VERSION" to "25"))
+        }
+    }
 }
