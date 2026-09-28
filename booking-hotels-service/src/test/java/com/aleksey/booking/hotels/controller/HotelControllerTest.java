@@ -6,15 +6,11 @@ import com.aleksey.booking.hotels.api.response.HotelListResponse;
 import com.aleksey.booking.hotels.api.response.HotelPaginationResponse;
 import com.aleksey.booking.hotels.api.response.HotelResponse;
 import com.aleksey.booking.hotels.api.response.RateRequest;
-import com.aleksey.booking.hotels.config.SecurityConfig;
-import com.aleksey.booking.hotels.converter.JwtConverter;
-import com.aleksey.booking.hotels.jwt.JwtAccessDeniedHandler;
 import com.aleksey.booking.hotels.service.HotelService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -27,20 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(HotelController.class)
-@Import(SecurityConfig.class)
-class HotelControllerTest {
+class HotelControllerTest extends BaseWebMvcTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
     private HotelService hotelService;
-
-    @MockitoBean
-    private JwtConverter jwtConverter;
-
-    @MockitoBean
-    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

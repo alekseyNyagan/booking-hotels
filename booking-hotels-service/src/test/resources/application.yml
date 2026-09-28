@@ -1,6 +1,9 @@
 spring:
+  cloud:
+    config:
+      enabled: false
   config:
-    import: "optional:configserver:"
+    import: "optional:configtree:../config-server/src/main/resources/config/"
   security:
     oauth2:
       resourceserver:
