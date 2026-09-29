@@ -48,4 +48,5 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-jdbc-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("com.h2database:h2")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
 }
