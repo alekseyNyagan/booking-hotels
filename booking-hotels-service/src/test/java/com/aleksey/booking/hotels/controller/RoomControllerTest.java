@@ -5,7 +5,6 @@ import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
 import com.aleksey.booking.hotels.api.response.RoomPaginationResponse;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
 import com.aleksey.booking.hotels.service.RoomService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -28,8 +27,6 @@ class RoomControllerTest extends BaseWebMvcTest{
 
     @MockitoBean
     private RoomService roomService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void testGetRoomById() throws Exception {
