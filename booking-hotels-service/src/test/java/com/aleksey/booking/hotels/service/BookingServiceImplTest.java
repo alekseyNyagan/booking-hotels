@@ -26,6 +26,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.Message;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -69,72 +71,81 @@ class BookingServiceImplTest {
      */
     @Test
     void successfulBookingCreationWithValidRequest() {
-        UUID userId = UUID.randomUUID();
-        Jwt jwt = mock(Jwt.class);
-        when(jwt.getSubject()).thenReturn(userId.toString());
+        TransactionSynchronizationManager.initSynchronization();
 
-        UpsertBookingRequest request = new UpsertBookingRequest(
-                "2023-10-01",
-                "2023-10-05",
-                List.of(1L, 2L)
-        );
+        try {
+            UUID userId = UUID.randomUUID();
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getSubject()).thenReturn(userId.toString());
 
-        Hotel hotel = new Hotel();
-        hotel.setId(1L);
-        hotel.setName("Test Hotel");
-        hotel.setCity("Test City");
+            UpsertBookingRequest request = new UpsertBookingRequest(
+                    "2023-10-01",
+                    "2023-10-05",
+                    List.of(1L, 2L)
+            );
 
-        Room room1 = new Room();
-        room1.setId(1L);
-        room1.setName("Room 1");
-        room1.setDescription("A cozy room");
-        room1.setNumber("101");
-        room1.setCost(100);
-        room1.setMaxCountOfPeople(2);
-        room1.setHotel(hotel);
-        room1.setUnavailableDates(new HashSet<>());
+            Hotel hotel = new Hotel();
+            hotel.setId(1L);
+            hotel.setName("Test Hotel");
+            hotel.setCity("Test City");
 
-        Room room2 = new Room();
-        room2.setId(2L);
-        room2.setName("Room 2");
-        room2.setDescription("A spacious room");
-        room2.setNumber("102");
-        room2.setCost(150);
-        room2.setMaxCountOfPeople(3);
-        room2.setHotel(hotel);
-        room2.setUnavailableDates(new HashSet<>());
+            Room room1 = new Room();
+            room1.setId(1L);
+            room1.setName("Room 1");
+            room1.setDescription("A cozy room");
+            room1.setNumber("101");
+            room1.setCost(100);
+            room1.setMaxCountOfPeople(2);
+            room1.setHotel(hotel);
+            room1.setUnavailableDates(new HashSet<>());
 
-        when(roomRepository.findAllByIdIn(request.roomIds())).thenReturn(List.of(room1, room2));
+            Room room2 = new Room();
+            room2.setId(2L);
+            room2.setName("Room 2");
+            room2.setDescription("A spacious room");
+            room2.setNumber("102");
+            room2.setCost(150);
+            room2.setMaxCountOfPeople(3);
+            room2.setHotel(hotel);
+            room2.setUnavailableDates(new HashSet<>());
 
-        Booking savedBooking = new Booking();
-        savedBooking.setId(1L);
-        when(bookingRepository.save(any(Booking.class))).thenReturn(savedBooking);
+            when(roomRepository.findAllByIdIn(request.roomIds())).thenReturn(List.of(room1, room2));
 
-        BookingResponse bookingResponse = new BookingResponse(
-                1L, LocalDate.parse("2023-10-01"),
-                LocalDate.parse("2023-10-05"),
-                List.of(new RoomInfo(1L, "Room 1", "A cozy room", "101", 100, 2, 1L),
-                        new RoomInfo(2L, "Room 2", "A spacious room", "102", 150, 3, 1L)),
-                userId
-        );
-        when(bookingMapper.toDto(any(Booking.class))).thenReturn(bookingResponse);
+            Booking savedBooking = new Booking();
+            savedBooking.setId(1L);
+            when(bookingRepository.save(any(Booking.class))).thenReturn(savedBooking);
 
-        BookingResponse result = bookingService.createBooking(request, jwt);
+            BookingResponse bookingResponse = new BookingResponse(
+                    1L, LocalDate.parse("2023-10-01"),
+                    LocalDate.parse("2023-10-05"),
+                    List.of(new RoomInfo(1L, "Room 1", "A cozy room", "101", 100, 2, 1L),
+                            new RoomInfo(2L, "Room 2", "A spacious room", "102", 150, 3, 1L)),
+                    userId
+            );
+            when(bookingMapper.toDto(any(Booking.class))).thenReturn(bookingResponse);
 
-        assertNotNull(result);
-        assertEquals(1L, result.id());
+            BookingResponse result = bookingService.createBooking(request, jwt);
 
-        ArgumentCaptor<Booking> bookingArgumentCaptor = ArgumentCaptor.forClass(Booking.class);
-        verify(bookingRepository, times(1)).save(bookingArgumentCaptor.capture());
-        verify(streamBridge, times(1)).send(anyString(), any(Message.class));
+            TransactionSynchronizationManager.getSynchronizations()
+                    .forEach(TransactionSynchronization::afterCommit);
 
-        Booking capturedBooking = bookingArgumentCaptor.getValue();
-        assertEquals(userId, capturedBooking.getUserId());
-        assertEquals(LocalDate.parse("2023-10-01"), capturedBooking.getArrivalDate());
-        assertEquals(LocalDate.parse("2023-10-05"), capturedBooking.getDepartureDate());
-        assertEquals(2, capturedBooking.getRooms().size());
-        assertTrue(capturedBooking.getRooms().getFirst().getUnavailableDates().stream()
-                .anyMatch(d -> d.getDate().equals(LocalDate.parse("2023-10-01"))));
+            assertNotNull(result);
+            assertEquals(1L, result.id());
+
+            ArgumentCaptor<Booking> bookingArgumentCaptor = ArgumentCaptor.forClass(Booking.class);
+            verify(bookingRepository, times(1)).save(bookingArgumentCaptor.capture());
+            verify(streamBridge, times(1)).send(anyString(), any(Message.class));
+
+            Booking capturedBooking = bookingArgumentCaptor.getValue();
+            assertEquals(userId, capturedBooking.getUserId());
+            assertEquals(LocalDate.parse("2023-10-01"), capturedBooking.getArrivalDate());
+            assertEquals(LocalDate.parse("2023-10-05"), capturedBooking.getDepartureDate());
+            assertEquals(2, capturedBooking.getRooms().size());
+            assertTrue(capturedBooking.getRooms().getFirst().getUnavailableDates().stream()
+                    .anyMatch(d -> d.getDate().equals(LocalDate.parse("2023-10-01"))));
+        } finally {
+            TransactionSynchronizationManager.clear();
+        }
     }
 
     /**

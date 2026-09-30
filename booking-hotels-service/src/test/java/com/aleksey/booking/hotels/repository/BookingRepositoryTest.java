@@ -5,38 +5,15 @@ import com.aleksey.booking.hotels.model.Room;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Testcontainers
-@DataJpaTest
-@AutoConfigureTestDatabase
-class BookingRepositoryTest {
-
-    @Container
-    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:16.3")
-            .withDatabaseName("testdb")
-            .withUsername("testuser")
-            .withPassword("testpassword");
-
-    @DynamicPropertySource
-    static void postgresqlProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgresContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgresContainer::getUsername);
-        registry.add("spring.datasource.password", postgresContainer::getPassword);
-    }
+class BookingRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private BookingRepository bookingRepository;
