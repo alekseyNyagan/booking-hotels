@@ -52,6 +52,14 @@ class RoomControllerTest extends BaseWebMvcTest{
     }
 
     @Test
+    void testGetRoomByIdWithoutAuthenticationShouldReturn401() throws Exception {
+        Long roomId = 1L;
+
+        mockMvc.perform(get("/api/room/{id}", roomId))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void testCreateRoom() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest(
                 "New Room",
@@ -82,6 +90,19 @@ class RoomControllerTest extends BaseWebMvcTest{
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("New Room"));
+    }
+
+    @Test
+    void testCreateRoomAsRegularUserShouldReturn403() throws Exception {
+        UpsertRoomRequest request = new UpsertRoomRequest(
+                "New Room", "Room Description", "Room Number", 100, 2, 1L
+        );
+
+        mockMvc.perform(post("/api/room")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -128,6 +149,15 @@ class RoomControllerTest extends BaseWebMvcTest{
         mockMvc.perform(delete("/api/room/{id}", roomId)
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testDeleteRoomAsRegularUserShouldReturn403() throws Exception {
+        Long roomId = 1L;
+
+        mockMvc.perform(delete("/api/room/{id}", roomId)
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER"))))
+                .andExpect(status().isForbidden());
     }
 
     @Test

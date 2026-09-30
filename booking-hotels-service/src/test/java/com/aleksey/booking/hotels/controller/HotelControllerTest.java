@@ -44,6 +44,12 @@ class HotelControllerTest extends BaseWebMvcTest {
     }
 
     @Test
+    void testGetAllHotelsWithoutAuthenticationShouldReturn401() throws Exception {
+        mockMvc.perform(get("/api/hotel"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void testGetHotelById() throws Exception {
         Long hotelId = 1L;
         HotelResponse hotelResponse = mock(HotelResponse.class);
@@ -79,6 +85,17 @@ class HotelControllerTest extends BaseWebMvcTest {
     }
 
     @Test
+    void testCreateHotelAsRegularUserShouldReturn403() throws Exception {
+        UpsertHotelRequest request = new UpsertHotelRequest("name", "title", "city", "address", 1.0F);
+
+        mockMvc.perform(post("/api/hotel")
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testUpdateHotel() throws Exception {
         Long hotelId = 1L;
         UpsertHotelRequest upsertHotelRequest = new UpsertHotelRequest(
@@ -109,6 +126,15 @@ class HotelControllerTest extends BaseWebMvcTest {
                 .andExpect(status().isNoContent());
 
         verify(hotelService, times(1)).deleteHotel(hotelId);
+    }
+
+    @Test
+    void testDeleteHotelAsRegularUserShouldReturn403() throws Exception {
+        Long hotelId = 1L;
+
+        mockMvc.perform(delete("/api/hotel/{id}", hotelId)
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER"))))
+                .andExpect(status().isForbidden());
     }
 
     @Test

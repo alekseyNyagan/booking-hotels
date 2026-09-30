@@ -80,6 +80,22 @@ class BookingControllerTest extends BaseWebMvcTest {
     }
 
     /**
+     * Given an unauthenticated user (no JWT token provided)<br>
+     * When the user attempts to create a new booking<br>
+     * Then the system should reject the request<br>
+     * And the response status should be 401 Unauthorized
+     */
+    @Test
+    void attemptToCreateBookingWithoutAuthenticationShouldReturn401() throws Exception {
+        UpsertBookingRequest request = new UpsertBookingRequest("2023-10-01", "2023-10-10", List.of(1L, 2L));
+
+        mockMvc.perform(post("/api/booking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    /**
      * Given a user with the role of "ADMIN" is authenticated<br>
      * And the user requests a page of bookings with a specified page size and page number<br>
      * When the user submits the request for the booking page<br>
