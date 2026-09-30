@@ -5,10 +5,7 @@ import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
 import com.aleksey.booking.hotels.service.BookingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -21,7 +18,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,15 +33,6 @@ class BookingControllerTest extends BaseWebMvcTest {
 
     @MockitoBean
     private BookingService bookingService;
-
-    @BeforeEach
-    void setupAccessDeniedHandler() throws Exception {
-        doAnswer((InvocationOnMock inv) -> {
-            HttpServletResponse response = inv.getArgument(1);
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return null;
-        }).when(jwtAccessDeniedHandler).handle(any(), any(), any());
-    }
 
     /**
      * Given a user with the role of "USER" is authenticated<br>
@@ -87,9 +74,25 @@ class BookingControllerTest extends BaseWebMvcTest {
         mockMvc.perform(post("/api/booking")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER")))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value("Дата прибытия должна быть указана!"));
+    }
+
+    /**
+     * Given an unauthenticated user (no JWT token provided)<br>
+     * When the user attempts to create a new booking<br>
+     * Then the system should reject the request<br>
+     * And the response status should be 401 Unauthorized
+     */
+    @Test
+    void attemptToCreateBookingWithoutAuthenticationShouldReturn401() throws Exception {
+        UpsertBookingRequest request = new UpsertBookingRequest("2023-10-01", "2023-10-10", List.of(1L, 2L));
+
+        mockMvc.perform(post("/api/booking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
     }
 
     /**

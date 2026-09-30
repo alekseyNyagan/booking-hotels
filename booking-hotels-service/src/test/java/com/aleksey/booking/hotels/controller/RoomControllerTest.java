@@ -5,7 +5,6 @@ import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
 import com.aleksey.booking.hotels.api.response.RoomPaginationResponse;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
 import com.aleksey.booking.hotels.service.RoomService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -29,8 +28,6 @@ class RoomControllerTest extends BaseWebMvcTest{
     @MockitoBean
     private RoomService roomService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Test
     void testGetRoomById() throws Exception {
         Long roomId = 1L;
@@ -52,6 +49,14 @@ class RoomControllerTest extends BaseWebMvcTest{
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(roomId))
                 .andExpect(jsonPath("$.name").value("Test Room"));
+    }
+
+    @Test
+    void testGetRoomByIdWithoutAuthenticationShouldReturn401() throws Exception {
+        Long roomId = 1L;
+
+        mockMvc.perform(get("/api/room/{id}", roomId))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -85,6 +90,19 @@ class RoomControllerTest extends BaseWebMvcTest{
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("New Room"));
+    }
+
+    @Test
+    void testCreateRoomAsRegularUserShouldReturn403() throws Exception {
+        UpsertRoomRequest request = new UpsertRoomRequest(
+                "New Room", "Room Description", "Room Number", 100, 2, 1L
+        );
+
+        mockMvc.perform(post("/api/room")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -131,6 +149,15 @@ class RoomControllerTest extends BaseWebMvcTest{
         mockMvc.perform(delete("/api/room/{id}", roomId)
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testDeleteRoomAsRegularUserShouldReturn403() throws Exception {
+        Long roomId = 1L;
+
+        mockMvc.perform(delete("/api/room/{id}", roomId)
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER"))))
+                .andExpect(status().isForbidden());
     }
 
     @Test
