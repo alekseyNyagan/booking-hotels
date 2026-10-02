@@ -52,4 +52,6 @@ class BookingRepositoryTest extends BaseRepositoryTest {
         assertThat(bookingsPage.getContent().get(0).getRooms()).hasSize(1);
         assertThat(bookingsPage.getContent().get(1).getRooms()).hasSize(1);
     }
+
+    //trigger ci
 }
