@@ -20,18 +20,18 @@ public class ClickHouseInitializer implements CommandLineRunner {
                 booking_id UInt64,
                 user_id UUID,
                 hotel_id UInt64,
-                hotel_city String,
+                hotel_city LowCardinality(String),
                 room_ids Array(UInt64),
                 rooms_count UInt8,
                 arrival_date Date,
                 departure_date Date,
                 total_nights UInt16,
-                total_cost Decimal(10,2),
-                created_at DateTime
+                total_cost Decimal(18,2),
+                created_at DateTime64(3)
             )
-            ENGINE = MergeTree()
-            PARTITION BY toYYYYMM(created_at)
-            ORDER BY (hotel_id, created_at)
+            ENGINE = ReplacingMergeTree()
+            PRIMARY KEY (booking_id)
+            ORDER BY (booking_id, created_at)
         """);
     }
 }
