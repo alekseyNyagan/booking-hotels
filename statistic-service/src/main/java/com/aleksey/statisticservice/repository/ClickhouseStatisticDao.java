@@ -6,7 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -15,19 +18,22 @@ public class ClickhouseStatisticDao implements StatisticDao {
 
     private final JdbcClient jdbcClient;
 
+    private static final String FROM_DATE_TIME_PARAMETER = "fromDateTime";
+    private static final String TO_DATE_TIME_PARAMETER = "toDateTime";
+
     @Override
     public List<DailyBookingStatResponse> getDailyBookings(LocalDate from, LocalDate to) {
         String sql = """
-            SELECT toDate(created_at) AS date, count() AS bookingsCount
+            SELECT toDate(created_at) AS date, count(DISTINCT booking_id) AS bookingsCount
             FROM booking_statistics
-            WHERE created_at BETWEEN :from AND :to
+            WHERE created_at BETWEEN :fromDateTime AND :toDateTime
             GROUP BY date
             ORDER BY date
         """;
 
         return jdbcClient.sql(sql)
-                .param("from", from)
-                .param("to", to)
+                .param(FROM_DATE_TIME_PARAMETER, from.atStartOfDay())
+                .param(TO_DATE_TIME_PARAMETER, to.atTime(LocalTime.MAX))
                 .query(DailyBookingStatResponse.class)
                 .list();
     }
@@ -35,8 +41,13 @@ public class ClickhouseStatisticDao implements StatisticDao {
     @Override
     public List<UserStatResponse> getTopUsers(int limit) {
         String sql = """
-            SELECT user_id, count() AS bookingsCount, sum(total_cost) AS totalSpent
-            FROM booking_statistics
+            SELECT user_id, count(DISTINCT booking_id) AS bookingsCount, sum(latest_cost) AS totalSpent
+            FROM (
+                SELECT user_id, booking_id, argMax(total_cost, created_at) AS latest_cost
+                FROM booking_statistic
+                WHERE created_at BETWEEN :fromDateTime AND :toDateTime
+                GROUP_BY user_id, booking_id
+            )
             GROUP BY user_id
             ORDER BY bookingsCount DESC
             LIMIT :limit
@@ -51,16 +62,20 @@ public class ClickhouseStatisticDao implements StatisticDao {
     @Override
     public List<RevenueByCityResponse> getRevenueByCity(LocalDate from, LocalDate to) {
         String sql = """
-            SELECT hotel_city, sum(total_cost) AS totalRevenue
-            FROM booking_statistics
-            WHERE created_at BETWEEN :from AND :to
+            SELECT hotel_city, sum(latest_cost) AS totalRevenue
+            FROM (
+                SELECT hotel_city, booking_id, argMax(total_cost, created_at) AS latest_cost
+                FROM booking_statistic
+                WHERE created_at BETWEEN :fromDateTime AND :toDateTime
+                GROUP_BY hotel_city, booking_id
+            )
             GROUP BY hotel_city
             ORDER BY totalRevenue DESC
         """;
 
         return jdbcClient.sql(sql)
-                .param("from", from)
-                .param("to", to)
+                .param(FROM_DATE_TIME_PARAMETER, from.atStartOfDay())
+                .param(TO_DATE_TIME_PARAMETER, to.atTime(LocalTime.MAX))
                 .query(RevenueByCityResponse.class)
                 .list();
     }
@@ -68,16 +83,20 @@ public class ClickhouseStatisticDao implements StatisticDao {
     @Override
     public List<RevenueByHotelResponse> getRevenueByHotel(LocalDate from, LocalDate to) {
         String sql = """
-            SELECT hotel_id, sum(total_cost) AS totalRevenue
-            FROM booking_statistics
-            WHERE created_at BETWEEN :from AND :to
+            SELECT hotel_id, sum(latest_cost) AS totalRevenue
+            FROM (
+                SELECT hotel_id, booking_id, argMax(total_cost, created_at) AS latest_cost
+                FROM booking-statistic
+                WHERE created_at BETWEEN :fromDateTime AND :toDateTime
+                GROUP_BY hotel_id, booking_id
+            )
             GROUP BY hotel_id
             ORDER BY totalRevenue DESC
         """;
 
         return jdbcClient.sql(sql)
-                .param("from", from)
-                .param("to", to)
+                .param(FROM_DATE_TIME_PARAMETER, from.atStartOfDay())
+                .param(TO_DATE_TIME_PARAMETER, to.atTime(LocalTime.MAX))
                 .query(RevenueByHotelResponse.class)
                 .list();
     }
@@ -86,18 +105,26 @@ public class ClickhouseStatisticDao implements StatisticDao {
     public SummaryResponse getSummary(LocalDate from, LocalDate to) {
         String sql = """
             SELECT
-                count() AS totalBookings,
+                count(DISTINCT booking_id) AS totalBookings,
                 uniq(user_id) AS uniqueUsers,
-                avg(total_nights) AS averageStayNights,
-                avg(total_cost) AS averageBookingCost,
-                sum(total_cost) AS totalRevenue
-            FROM booking_statistics
-            WHERE created_at BETWEEN :from AND :to
+                avg(latest_nights) AS averageStayNights,
+                avg(latest_cost) AS averageBookingCost,
+                sum(latest_cost) AS totalRevenue
+            FROM (
+                SELECT
+                    booking_id,
+                    user_id,
+                    argMax(total_nights, created_at) AS latest_nights,
+                    argMax(total_cost, created_at) AS latest_cost
+                FROM booking_statistic
+                WHERE created_at BETWEEN :fromDateTime AND :toDateTime
+                GROUP_BY booking_id, user_id
+            )
         """;
 
         return jdbcClient.sql(sql)
-                .param("from", from)
-                .param("to", to)
+                .param(FROM_DATE_TIME_PARAMETER, from.atStartOfDay())
+                .param(TO_DATE_TIME_PARAMETER, to.atTime(LocalTime.MAX))
                 .query(SummaryResponse.class)
                 .single();
     }
@@ -134,19 +161,22 @@ public class ClickhouseStatisticDao implements StatisticDao {
             )
         """;
 
+        Long[] roomsArray = statisticModel.roomIds().toArray(new Long[0]);
+        Timestamp createdAtTimestamp = Timestamp.from(Instant.parse(statisticModel.createdAt()));
+
         jdbcClient.sql(sql)
                 .param("event_id", statisticModel.eventId())
                 .param("booking_id", statisticModel.bookingId())
                 .param("user_id", statisticModel.userId())
                 .param("hotel_id", statisticModel.hotelId())
                 .param("hotel_city", statisticModel.hotelCity())
-                .param("room_ids", statisticModel.roomIds().toArray())
+                .param("room_ids", roomsArray)
                 .param("rooms_count", statisticModel.roomsCount())
                 .param("arrival_date", statisticModel.arrivalDate())
                 .param("departure_date", statisticModel.departureDate())
                 .param("total_nights", statisticModel.totalNights())
                 .param("total_cost", statisticModel.totalCost())
-                .param("created_at", statisticModel.createdAt())
+                .param("created_at", createdAtTimestamp)
                 .update();
     }
 }
