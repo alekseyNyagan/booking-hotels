@@ -30,6 +30,7 @@ dependencies {
     implementation("jakarta.xml.bind:jakarta.xml.bind-api")
     implementation("org.springframework.cloud:spring-cloud-stream")
     implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
+    implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
     implementation("io.micrometer:micrometer-tracing-bridge-brave")
     implementation(libs.logstash.logback.encoder)
     implementation("io.micrometer:micrometer-registry-prometheus")
