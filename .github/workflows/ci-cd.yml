@@ -27,6 +27,7 @@ jobs:
             gateway-server: 'gateway-server/**'
             statistic-service: 'statistic-service/**'
             user-service: 'user-service/**'
+            payment-service: 'payment-service/**'
 
   build-and-push:
     name: Build & Push
