@@ -4,7 +4,9 @@ import brave.Tracer;
 import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
 import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
+import com.aleksey.booking.hotels.api.response.PaymentResponse;
 import com.aleksey.booking.hotels.api.response.RoomInfo;
+import com.aleksey.booking.hotels.client.PaymentClient;
 import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
 import com.aleksey.booking.hotels.mapper.BookingMapper;
 import com.aleksey.booking.hotels.model.Booking;
@@ -55,6 +57,9 @@ class BookingServiceImplTest {
 
     @Mock
     private Tracer tracer;
+
+    @Mock
+    private PaymentClient paymentClient;
 
     @InjectMocks
     private BookingServiceImpl bookingService;
@@ -114,6 +119,7 @@ class BookingServiceImplTest {
             Booking savedBooking = new Booking();
             savedBooking.setId(1L);
             when(bookingRepository.save(any(Booking.class))).thenReturn(savedBooking);
+            when(paymentClient.processPayment(any(), any(), any())).thenReturn(new PaymentResponse(UUID.randomUUID(), "SUCCESS"));
 
             BookingResponse bookingResponse = new BookingResponse(
                     1L, LocalDate.parse("2023-10-01"),
