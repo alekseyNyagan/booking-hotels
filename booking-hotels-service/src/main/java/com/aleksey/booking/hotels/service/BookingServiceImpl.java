@@ -3,6 +3,8 @@ package com.aleksey.booking.hotels.service;
 import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
 import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
+import com.aleksey.booking.hotels.api.response.PaymentResponse;
+import com.aleksey.booking.hotels.client.PaymentClient;
 import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
 import com.aleksey.booking.hotels.kafka.model.StatisticModel;
 import com.aleksey.booking.hotels.mapper.BookingMapper;
@@ -14,6 +16,7 @@ import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
 import com.aleksey.booking.hotels.utils.DateConverter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +40,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingServiceImpl implements BookingService {
 
     private static final String STATISTIC_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -50,6 +54,8 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
 
     private final StreamBridge streamBridge;
+
+    private final PaymentClient paymentClient;
 
     @Override
     @Transactional
@@ -70,6 +76,14 @@ public class BookingServiceImpl implements BookingService {
             @Override
             public void afterCommit() {
                 streamBridge.send(KAFKA_PRODUCER_BINDING, statisticMessage);
+
+                PaymentResponse payment = paymentClient.processPayment(booking.getId(), userId, statisticMessage.getPayload().totalCost());
+
+                if ("PENDING_PAYMENT_FALLBACK".equals(payment.status())) {
+                    log.warn("⚠️ Бронирование {} сохранено, но платеж ушел в обработку через Fallback шлюза!", booking.getId());
+                } else {
+                    log.info("✅ Бронирование {} успешно оплачено! ID Транзакции: {}", booking.getId(), payment.transactionId());
+                }
             }
         });
 

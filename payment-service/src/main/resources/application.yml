@@ -1,5 +1,5 @@
 spring:
   application:
-    name: eureka-server
+    name: payment-service
   config:
     import: ${SPRING_CONFIG_IMPORT:configserver:http://localhost:8071}
