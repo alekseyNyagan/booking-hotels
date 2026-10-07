@@ -4,7 +4,10 @@ import com.aleksey.booking.hotels.api.request.PaymentRequest;
 import com.aleksey.booking.hotels.api.response.PaymentResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import io.micrometer.observation.ObservationRegistry;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -20,8 +23,11 @@ public class PaymentClient {
 
     private final RestClient restClient;
 
-    public PaymentClient(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder
+    public PaymentClient(LoadBalancerClient loadBalancerClient, ObservationRegistry observationRegistry) {
+        LoadBalancerInterceptor loadBalancerInterceptor = new LoadBalancerInterceptor(loadBalancerClient);
+        this.restClient = RestClient.builder()
+                .requestInterceptor(loadBalancerInterceptor)
+                .observationRegistry(observationRegistry)
                 .baseUrl("http://payment-service")
                 .build();
     }
