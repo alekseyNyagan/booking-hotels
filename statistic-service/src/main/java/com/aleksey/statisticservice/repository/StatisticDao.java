@@ -9,6 +9,8 @@ import java.util.List;
 public interface StatisticDao {
     void save(StatisticModel statisticModel);
 
+    void saveBatch(List<StatisticModel> statistics);
+
     List<DailyBookingStatResponse> getDailyBookings(LocalDate from, LocalDate to);
 
     List<UserStatResponse> getTopUsers(int limit);
