@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface StatisticService {
-    void saveStatistic(StatisticModel statistic);
+    void saveStatisticBatch(List<StatisticModel> statistics);
 
     List<DailyBookingStatResponse> getDailyBookings(LocalDate from, LocalDate to);
 

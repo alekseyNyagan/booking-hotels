@@ -18,13 +18,24 @@ public class StatisticServiceImpl implements StatisticService {
     private final StatisticDao statisticDao;
 
     @Override
-    public void saveStatistic(StatisticModel statistic) {
+    public void saveStatisticBatch(List<StatisticModel> statistics) {
+        if (statistics.isEmpty()) {
+            return;
+        }
         try {
-            statisticDao.save(statistic);
-            log.info("✅ Statistic saved to ClickHouse: bookingId={}, userId={}",
-                    statistic.bookingId(), statistic.userId());
+            statisticDao.saveBatch(statistics);
+            log.info("✅ Successfully saved batch of {} records to ClickHouse", statistics.size());
         } catch (Exception e) {
-            log.error("❌ Failed to save statistic to ClickHouse", e);
+            log.warn("⚠️ Batch insert failed on database level. Switching to fallback one-by-one mode to isolate bad records. Reason: {}", e.getMessage());
+
+            for (StatisticModel model: statistics) {
+                try {
+                    statisticDao.save(model);
+                } catch (Exception singleException) {
+                    log.error("❌ ClickHouse rejected single record (BookingID: {}, UserID: {}). Sending to DLQ.", model.bookingId(), model.userId(), singleException);
+                    throw singleException;
+                }
+            }
         }
     }
 
