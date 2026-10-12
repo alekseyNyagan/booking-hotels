@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-5.0.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1791779163745-1" author="aleksey (generated)">
+        <addColumn tableName="booking">
+            <column name="status" type="VARCHAR(255)" defaultValue="PENDING_PAYMENT"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1791779163745-1-update-existing" author="aleksey">
+        <update tableName="booking">
+            <column name="status" value="PENDING_PAYMENT"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </update>
+    </changeSet>
+    <changeSet id="1791779163745-2" author="aleksey (generated)">
+        <addNotNullConstraint columnName="status" tableName="booking"/>
+        <addNotNullConstraint tableName="booking" columnName="created_at" columnDataType="TIMESTAMP"/>
+    </changeSet>
+
+</databaseChangeLog>
