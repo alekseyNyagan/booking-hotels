@@ -10,6 +10,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -29,6 +30,9 @@ public abstract class BaseWebMvcTest {
 
     @MockitoBean
     protected JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
+    @MockitoBean
+    JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
     @BeforeEach
     void setupAccessDeniedHandler() throws Exception {

@@ -12,6 +12,7 @@ import com.aleksey.booking.hotels.model.Booking;
 import com.aleksey.booking.hotels.model.Hotel;
 import com.aleksey.booking.hotels.model.Room;
 import com.aleksey.booking.hotels.model.UnavailableDate;
+import com.aleksey.booking.hotels.model.enums.BookingStatus;
 import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
 import com.aleksey.booking.hotels.utils.DateConverter;
@@ -24,9 +25,12 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -57,6 +61,8 @@ public class BookingServiceImpl implements BookingService {
 
     private final PaymentClient paymentClient;
 
+    private final PlatformTransactionManager transactionManager;
+
     @Override
     @Transactional
     public BookingResponse createBooking(UpsertBookingRequest upsertBookingRequest, Jwt jwt) {
@@ -80,9 +86,16 @@ public class BookingServiceImpl implements BookingService {
                 PaymentResponse payment = paymentClient.processPayment(booking.getId(), userId, statisticMessage.getPayload().totalCost());
 
                 if ("PENDING_PAYMENT_FALLBACK".equals(payment.status())) {
-                    log.warn("⚠️ Бронирование {} сохранено, но платеж ушел в обработку через Fallback шлюза!", booking.getId());
-                } else {
-                    log.info("✅ Бронирование {} успешно оплачено! ID Транзакции: {}", booking.getId(), payment.transactionId());
+                    log.warn("⚠️ Бронирование {} сохранено, но платеж завис. Оставляем в статусе PENDING_PAYMENT. Включится планировщик.", booking.getId());
+                } else if ("SUCCESS".equals(payment.status())) {
+                    TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+                    transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+
+                    transactionTemplate.executeWithoutResult(_ -> bookingRepository.findById(booking.getId()).ifPresent(b -> {
+                        b.setStatus(BookingStatus.CONFIRMED);
+                        bookingRepository.save(b);
+                    }));
+                    log.info("✅ Бронирование {} успешно переведено в статус CONFIRMED!", booking.getId());
                 }
             }
         });
@@ -107,8 +120,10 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = new Booking();
         booking.setArrivalDate(arrivalDate);
         booking.setDepartureDate(departureDate);
-        booking.setRooms(rooms);
         booking.setUserId(userId);
+
+        rooms.forEach(booking::addRoom);
+
         return booking;
     }
 

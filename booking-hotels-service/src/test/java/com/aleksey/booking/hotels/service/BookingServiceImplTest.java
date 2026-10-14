@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.Message;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -60,6 +61,9 @@ class BookingServiceImplTest {
 
     @Mock
     private PaymentClient paymentClient;
+
+    @Mock
+    private PlatformTransactionManager transactionManager;
 
     @InjectMocks
     private BookingServiceImpl bookingService;
