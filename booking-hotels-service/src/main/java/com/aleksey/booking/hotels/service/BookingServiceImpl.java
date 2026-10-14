@@ -120,8 +120,10 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = new Booking();
         booking.setArrivalDate(arrivalDate);
         booking.setDepartureDate(departureDate);
-        booking.setRooms(rooms);
         booking.setUserId(userId);
+
+        rooms.forEach(booking::addRoom);
+
         return booking;
     }
 

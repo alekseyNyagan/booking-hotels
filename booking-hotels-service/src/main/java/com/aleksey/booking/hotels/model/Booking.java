@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -41,12 +42,20 @@ public class Booking {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "booking")
     @ToString.Exclude
     @BatchSize(size = 5)
     private List<Room> rooms;
+
+    public void addRoom(Room room) {
+        if (this.rooms == null) {
+            this.rooms = new ArrayList<>();
+        }
+        this.rooms.add(room);
+        room.setBooking(this);
+    }
 
     @Override
     public final boolean equals(Object o) {
