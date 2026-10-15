@@ -4,6 +4,7 @@ import com.aleksey.booking.hotels.model.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Entity
+@DynamicUpdate
 @Table(name = "booking")
 public class Booking {
 
