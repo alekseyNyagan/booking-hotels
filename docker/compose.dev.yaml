@@ -93,6 +93,31 @@ services:
     ports:
       - "8181:8181"
 
+  payment-service:
+    image: alekseynyagan607/payment-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071
+      - EUREKA_HOST=eureka-server
+      - EUREKA_PORT=8070
+      - SERVER_PORT=8085
+      - ZIPKIN_HOST=zipkin
+      - ZIPKIN_PORT=9411
+      - KEYCLOAK_HOST=keycloak
+      - KEYCLOAK_PORT=8080
+    depends_on:
+      booking-hotels-service:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+      gateway-server:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
   config-server:
     extends:
       service: config-server
@@ -206,7 +231,7 @@ services:
       - "3000:3000"
 
   pgadmin:
-    image: dpage/pgadmin4:9.0.0
+    image: dpage/pgadmin4:9.18.0
     restart: "no"
     ports:
       - "5050:80"
