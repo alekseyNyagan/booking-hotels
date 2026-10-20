@@ -1,7 +1,7 @@
 package com.aleksey.booking.hotels.mapper;
 
 import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
-import com.aleksey.booking.hotels.api.response.RoomInfo;
+import com.aleksey.booking.hotels.repository.projection.RoomProjection;
 import com.aleksey.booking.hotels.api.response.RoomPaginationResponse;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
 import com.aleksey.booking.hotels.model.Hotel;
@@ -36,7 +36,7 @@ public interface RoomMapper {
         return dates.stream().map(UnavailableDate::getDate).collect(Collectors.toSet());
     }
 
-    List<RoomInfo> roomListToRoomInfoList(List<Room> rooms);
+    List<RoomProjection> roomListToRoomProjectionsList(List<Room> rooms);
 
     List<RoomResponse> roomListToResponseList(List<Room> rooms);
 

@@ -1,14 +1,15 @@
 package com.aleksey.booking.hotels.repository;
 
 import com.aleksey.booking.hotels.model.Booking;
-import com.aleksey.booking.hotels.model.Room;
+import com.aleksey.booking.hotels.model.enums.BookingStatus;
+import com.aleksey.booking.hotels.repository.projection.BookingProjection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,40 +19,49 @@ class BookingRepositoryTest extends BaseRepositoryTest {
     @Autowired
     private BookingRepository bookingRepository;
 
-    @Autowired
-    private RoomRepository roomRepository;
-
     @BeforeEach
     void setUp() {
         bookingRepository.deleteAll();
-        roomRepository.deleteAll();
     }
 
     @Test
-    void testFindAll() {
-        Room room1 = new Room();
-        room1.setName("Room 1");
-        roomRepository.save(room1);
+    void shouldFindOnlyStuckPendingBookingsOlderThanThreshold() {
+        LocalDateTime now = LocalDateTime.now();
 
-        Room room2 = new Room();
-        room2.setName("Room 2");
-        roomRepository.save(room2);
+        Booking stuckBooking = new Booking();
+        stuckBooking.setStatus(BookingStatus.PENDING_PAYMENT);
+        stuckBooking.setCreatedAt(now.minusMinutes(15));
+        bookingRepository.save(stuckBooking);
 
-        Booking booking1 = new Booking();
-        booking1.setRooms(List.of(room1));
-        bookingRepository.save(booking1);
+        Booking freshBooking = new Booking();
+        freshBooking.setStatus(BookingStatus.PENDING_PAYMENT);
+        freshBooking.setCreatedAt(now.minusMinutes(2));
+        bookingRepository.save(freshBooking);
 
-        Booking booking2 = new Booking();
-        booking2.setRooms(List.of(room2));
-        bookingRepository.save(booking2);
+        Booking confirmedBooking = new Booking();
+        confirmedBooking.setStatus(BookingStatus.CONFIRMED);
+        confirmedBooking.setCreatedAt(now.minusMinutes(20));
+        bookingRepository.save(confirmedBooking);
 
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Booking> bookingsPage = bookingRepository.findAll(pageable);
+        LocalDateTime threshold = now.minusMinutes(10);
+        List<Booking> result = bookingRepository.findAllByStatusAndCreatedAtBefore(BookingStatus.PENDING_PAYMENT, threshold);
 
-        assertThat(bookingsPage.getContent()).hasSize(2);
-        assertThat(bookingsPage.getContent().get(0).getRooms()).hasSize(1);
-        assertThat(bookingsPage.getContent().get(1).getRooms()).hasSize(1);
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().getId()).isEqualTo(stuckBooking.getId());
     }
 
-    //trigger ci
+    @Test
+    void shouldCorrectlyLoadBookingDTOProjectionsWithoutFullEntityFootprint() {
+        Booking booking = new Booking();
+        booking.setArrivalDate(java.time.LocalDate.of(2026, 10, 20));
+        booking.setDepartureDate(java.time.LocalDate.of(2026, 10, 25));
+        bookingRepository.save(booking);
+
+        Page<BookingProjection> projectionPage = bookingRepository.findBookings(PageRequest.of(0, 10));
+
+        assertThat(projectionPage.getContent()).hasSize(1);
+        BookingProjection targetProjection = projectionPage.getContent().getFirst();
+        assertThat(targetProjection.id()).isEqualTo(booking.getId());
+        assertThat(targetProjection.arrivalDate()).isEqualTo(booking.getArrivalDate());
+    }
 }

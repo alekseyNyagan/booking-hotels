@@ -5,7 +5,6 @@ import com.aleksey.booking.hotels.api.request.UpsertBookingRequest;
 import com.aleksey.booking.hotels.api.response.BookingPaginationResponse;
 import com.aleksey.booking.hotels.api.response.BookingResponse;
 import com.aleksey.booking.hotels.api.response.PaymentResponse;
-import com.aleksey.booking.hotels.api.response.RoomInfo;
 import com.aleksey.booking.hotels.client.PaymentClient;
 import com.aleksey.booking.hotels.exception.RoomsUnavailableException;
 import com.aleksey.booking.hotels.mapper.BookingMapper;
@@ -15,6 +14,8 @@ import com.aleksey.booking.hotels.model.Room;
 import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
+import com.aleksey.booking.hotels.repository.projection.BookingProjection;
+import com.aleksey.booking.hotels.repository.projection.RoomProjection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -128,8 +129,8 @@ class BookingServiceImplTest {
             BookingResponse bookingResponse = new BookingResponse(
                     1L, LocalDate.parse("2023-10-01"),
                     LocalDate.parse("2023-10-05"),
-                    List.of(new RoomInfo(1L, "Room 1", "A cozy room", "101", 100, 2, 1L),
-                            new RoomInfo(2L, "Room 2", "A spacious room", "102", 150, 3, 1L)),
+                    List.of(new RoomProjection(1L, "Room 1", "A cozy room", "101", 100, 2, 1L, 1L),
+                            new RoomProjection(2L, "Room 2", "A spacious room", "102", 150, 3, 1L, 1L)),
                     userId
             );
             when(bookingMapper.toDto(any(Booking.class))).thenReturn(bookingResponse);
@@ -190,11 +191,41 @@ class BookingServiceImplTest {
     void retrievingAPaginatedListOfBookings() {
         int pageSize = 10;
         int pageNumber = 0;
-        Page<Booking> bookingsPage = new PageImpl<>(List.of(new Booking()), PageRequest.of(pageNumber, pageSize), 1);
-        BookingPaginationResponse expectedResponse = new BookingPaginationResponse(1L, List.of());
+        UUID userId = UUID.randomUUID();
 
-        when(bookingRepository.findAll(any(Pageable.class))).thenReturn(bookingsPage);
-        when(bookingMapper.bookingListToBookingPaginationResponse(anyLong(), anyList())).thenReturn(expectedResponse);
+        BookingProjection bookingProjection = new BookingProjection(
+                1L,
+                LocalDate.of(2025, 3, 1),
+                LocalDate.of(2025, 3, 2),
+                userId);
+
+        RoomProjection roomProjection = new RoomProjection(
+                1L,
+                "room1",
+                "description1",
+                "number1",
+                100,
+                2,
+                1L,
+                1L
+        );
+
+        List<RoomProjection> roomProjections = List.of(roomProjection);
+
+        BookingResponse bookingResponse = new BookingResponse(
+                1L,
+                LocalDate.of(2025, 3, 1),
+                LocalDate.of(2025, 3, 2),
+                roomProjections,
+                userId
+        );
+
+        Page<BookingProjection> bookingsPage = new PageImpl<>(List.of(bookingProjection), PageRequest.of(pageNumber, pageSize), 1);
+        BookingPaginationResponse expectedResponse = new BookingPaginationResponse(1L, List.of(bookingResponse));
+
+        when(bookingRepository.findBookings(any(Pageable.class))).thenReturn(bookingsPage);
+        when(roomRepository.findRoomsByBookingIds(List.of(1L))).thenReturn(roomProjections);
+        when(bookingMapper.toResponse(bookingProjection, roomProjections)).thenReturn(bookingResponse);
         BookingPaginationResponse response = bookingService.getBookingPage(pageSize, pageNumber);
 
         assertEquals(expectedResponse, response);
