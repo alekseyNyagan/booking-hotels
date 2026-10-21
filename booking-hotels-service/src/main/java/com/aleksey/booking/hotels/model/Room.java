@@ -45,7 +45,7 @@ public class Room {
     )
     @ToString.Exclude
     @BatchSize(size = 5)
-    private Set<UnavailableDate> unavailableDates;
+    private Set<UnavailableDate> unavailableDates = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
@@ -58,9 +58,6 @@ public class Room {
     private Booking booking;
 
     public void addUnavailableDates(Set<UnavailableDate> unavailableDates) {
-        if (this.unavailableDates == null) {
-            this.unavailableDates = new HashSet<>();
-        }
         this.unavailableDates.addAll(unavailableDates);
     }
 

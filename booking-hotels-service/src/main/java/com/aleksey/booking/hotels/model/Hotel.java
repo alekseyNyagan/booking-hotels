@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +44,7 @@ public class Hotel {
 
     @OneToMany(mappedBy = "hotel")
     @ToString.Exclude
-    private List<Room> rooms;
+    private List<Room> rooms = new ArrayList<>();
 
     @Override
     public final boolean equals(Object o) {

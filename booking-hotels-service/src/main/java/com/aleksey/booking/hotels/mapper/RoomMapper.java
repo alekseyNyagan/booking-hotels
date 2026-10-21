@@ -1,7 +1,7 @@
 package com.aleksey.booking.hotels.mapper;
 
 import com.aleksey.booking.hotels.api.request.UpsertRoomRequest;
-import com.aleksey.booking.hotels.api.response.RoomInfo;
+import com.aleksey.booking.hotels.repository.projection.RoomProjection;
 import com.aleksey.booking.hotels.api.response.RoomPaginationResponse;
 import com.aleksey.booking.hotels.api.response.RoomResponse;
 import com.aleksey.booking.hotels.model.Hotel;
@@ -20,13 +20,11 @@ import java.util.stream.Collectors;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface RoomMapper {
     @Mapping(source = "upsertRoomRequest.name", target = "name")
-    @Mapping(target = "unavailableDates", expression = "java(new java.util.HashSet<>())")
     @Mapping(target = "id", ignore = true)
     Room toEntity(UpsertRoomRequest upsertRoomRequest, Hotel hotel);
 
     @Mapping(source = "roomId", target = "id")
     @Mapping(source = "upsertRoomRequest.name", target = "name")
-    @Mapping(target = "unavailableDates", expression = "java(new java.util.HashSet<>())")
     Room toEntity(Long roomId, UpsertRoomRequest upsertRoomRequest, Hotel hotel);
 
     @Mapping(source = "hotel.id", target = "hotelId")
@@ -36,7 +34,7 @@ public interface RoomMapper {
         return dates.stream().map(UnavailableDate::getDate).collect(Collectors.toSet());
     }
 
-    List<RoomInfo> roomListToRoomInfoList(List<Room> rooms);
+    List<RoomProjection> roomListToRoomProjectionsList(List<Room> rooms);
 
     List<RoomResponse> roomListToResponseList(List<Room> rooms);
 

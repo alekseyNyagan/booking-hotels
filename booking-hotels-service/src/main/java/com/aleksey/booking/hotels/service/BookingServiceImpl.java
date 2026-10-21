@@ -15,6 +15,8 @@ import com.aleksey.booking.hotels.model.UnavailableDate;
 import com.aleksey.booking.hotels.model.enums.BookingStatus;
 import com.aleksey.booking.hotels.repository.BookingRepository;
 import com.aleksey.booking.hotels.repository.RoomRepository;
+import com.aleksey.booking.hotels.repository.projection.BookingProjection;
+import com.aleksey.booking.hotels.repository.projection.RoomProjection;
 import com.aleksey.booking.hotels.utils.DateConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -106,8 +109,18 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public BookingPaginationResponse getBookingPage(Integer pageSize, Integer pageNumber) {
-        Page<Booking> bookings = bookingRepository.findAll(PageRequest.of(pageNumber, pageSize));
-        return bookingMapper.bookingListToBookingPaginationResponse(bookings.getTotalElements(), bookings.getContent());
+        Page<BookingProjection> bookings = bookingRepository.findBookings(PageRequest.of(pageNumber, pageSize));
+
+        List<Long> bookingIds = bookings.stream().map(BookingProjection::id).toList();
+
+        List<RoomProjection> rooms = roomRepository.findRoomsByBookingIds(bookingIds);
+
+        Map<Long, List<RoomProjection>> roomsByBookingId = rooms.stream().collect(Collectors.groupingBy(RoomProjection::bookingId));
+
+        return new BookingPaginationResponse(bookings.getTotalElements(), bookings.map(booking -> bookingMapper.toResponse(
+                booking,
+                roomsByBookingId.getOrDefault(booking.id(), List.of())
+                )).toList());
     }
 
     private Booking prepareBooking(UUID userId, List<Room> rooms, LocalDate arrivalDate, LocalDate departureDate) {

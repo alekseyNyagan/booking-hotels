@@ -4,6 +4,7 @@ import com.aleksey.booking.hotels.model.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Entity
+@DynamicUpdate
 @Table(name = "booking")
 public class Booking {
 
@@ -47,12 +49,9 @@ public class Booking {
     @OneToMany(mappedBy = "booking")
     @ToString.Exclude
     @BatchSize(size = 5)
-    private List<Room> rooms;
+    private List<Room> rooms = new ArrayList<>();
 
     public void addRoom(Room room) {
-        if (this.rooms == null) {
-            this.rooms = new ArrayList<>();
-        }
         this.rooms.add(room);
         room.setBooking(this);
     }
