@@ -20,13 +20,11 @@ import java.util.stream.Collectors;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface RoomMapper {
     @Mapping(source = "upsertRoomRequest.name", target = "name")
-    @Mapping(target = "unavailableDates", expression = "java(new java.util.HashSet<>())")
     @Mapping(target = "id", ignore = true)
     Room toEntity(UpsertRoomRequest upsertRoomRequest, Hotel hotel);
 
     @Mapping(source = "roomId", target = "id")
     @Mapping(source = "upsertRoomRequest.name", target = "name")
-    @Mapping(target = "unavailableDates", expression = "java(new java.util.HashSet<>())")
     Room toEntity(Long roomId, UpsertRoomRequest upsertRoomRequest, Hotel hotel);
 
     @Mapping(source = "hotel.id", target = "hotelId")

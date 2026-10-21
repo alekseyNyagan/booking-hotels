@@ -49,12 +49,9 @@ public class Booking {
     @OneToMany(mappedBy = "booking")
     @ToString.Exclude
     @BatchSize(size = 5)
-    private List<Room> rooms;
+    private List<Room> rooms = new ArrayList<>();
 
     public void addRoom(Room room) {
-        if (this.rooms == null) {
-            this.rooms = new ArrayList<>();
-        }
         this.rooms.add(room);
         room.setBooking(this);
     }
