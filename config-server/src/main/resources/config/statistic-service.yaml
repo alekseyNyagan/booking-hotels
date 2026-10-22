@@ -42,6 +42,14 @@ spring:
           group: statistic-group
           consumer:
             batch-mode: true
+            max-attempts: 3
+            back-off-initial-interval: 2000
+            back-off-multiplier: 2.0
+            retry:
+              enable: true
+              retryable-exceptions:
+                org.springframework.dao.DataAccessResourceFailureException: true
+                org.springframework.transaction.CannotCreateTransactionException: true
 
 eureka:
   instance:
