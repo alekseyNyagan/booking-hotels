@@ -1,10 +1,10 @@
 [versions]
-springDoc = "3.1.0"
+springDoc = "3.2.0"
 mapstruct = "1.6.3"
 logbacEncoder = "9.0"
-commonsCodec = "1.22.1"
+commonsCodec = "1.23.0"
 jsonOrg = "20260814"
-clickhouse = "0.10.0"
+clickhouse = "0.11.0"
 keycloakClient = "25.0.6"
 
 [libraries]
