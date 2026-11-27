@@ -3,25 +3,52 @@ package com.aleksey.statisticservice.repository;
 import com.aleksey.statisticservice.api.response.*;
 import com.aleksey.statisticservice.kafka.model.StatisticModel;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import java.sql.*;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
 public class ClickhouseStatisticDao implements StatisticDao {
 
+    private static final String INSERT_SQL = """
+                INSERT INTO booking_statistics (
+                    event_id,
+                    booking_id,
+                    user_id,
+                    hotel_id,
+                    hotel_city,
+                    room_ids,
+                    rooms_count,
+                    arrival_date,
+                    departure_date,
+                    total_nights,
+                    total_cost,
+                    created_at
+                ) VALUES (
+                    :event_id,
+                    :booking_id,
+                    :user_id,
+                    :hotel_id,
+                    :hotel_city,
+                    :room_ids,
+                    :rooms_count,
+                    :arrival_date,
+                    :departure_date,
+                    :total_nights,
+                    :total_cost,
+                    :created_at
+                )
+            """;
     private final JdbcClient jdbcClient;
-    private final JdbcTemplate jdbcTemplate;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -138,104 +165,39 @@ public class ClickhouseStatisticDao implements StatisticDao {
 
     @Override
     public void save(StatisticModel statisticModel) {
-        String sql = """
-            INSERT INTO booking_statistics (
-                event_id,
-                booking_id,
-                user_id,
-                hotel_id,
-                hotel_city,
-                room_ids,
-                rooms_count,
-                arrival_date,
-                departure_date,
-                total_nights,
-                total_cost,
-                created_at
-            ) VALUES (
-                :event_id,
-                :booking_id,
-                :user_id,
-                :hotel_id,
-                :hotel_city,
-                :room_ids,
-                :rooms_count,
-                :arrival_date,
-                :departure_date,
-                :total_nights,
-                :total_cost,
-                :created_at
-            )
-        """;
-
-        Long[] roomsArray = statisticModel.roomIds().toArray(new Long[0]);
-        Timestamp createdAtTimestamp = formatDate(statisticModel);
-
-        jdbcClient.sql(sql)
-                .param("event_id", statisticModel.eventId())
-                .param("booking_id", statisticModel.bookingId())
-                .param("user_id", statisticModel.userId())
-                .param("hotel_id", statisticModel.hotelId())
-                .param("hotel_city", statisticModel.hotelCity())
-                .param("room_ids", roomsArray)
-                .param("rooms_count", statisticModel.roomsCount())
-                .param("arrival_date", statisticModel.arrivalDate())
-                .param("departure_date", statisticModel.departureDate())
-                .param("total_nights", statisticModel.totalNights())
-                .param("total_cost", statisticModel.totalCost())
-                .param("created_at", createdAtTimestamp)
+        jdbcClient.sql(INSERT_SQL)
+                .params(toParams(statisticModel))
                 .update();
     }
 
     @Override
     public void saveBatch(List<StatisticModel> statistics) {
-        String sql = """
-            INSERT INTO booking_statistics (
-                event_id,
-                booking_id,
-                user_id,
-                hotel_id,
-                hotel_city,
-                room_ids,
-                rooms_count,
-                arrival_date,
-                departure_date,
-                total_nights,
-                total_cost,
-                created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+        if (statistics.isEmpty()) {
+            return;
+        }
 
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(@NonNull PreparedStatement ps, int i) throws SQLException {
-                StatisticModel model = statistics.get(i);
+        var batchSpec = jdbcClient.sql(INSERT_SQL).batch();
 
-                Long[] roomsArray = model.roomIds().toArray(new Long[0]);
-                Timestamp createdAtTimestamp = formatDate(model);
+        statistics.forEach(model -> batchSpec.entry(batchEntry -> toParams(model).forEach(batchEntry::param)));
 
-                ps.setObject(1, model.eventId());
-                ps.setLong(2, model.bookingId());
-                ps.setObject(3, model.userId());
-                ps.setLong(4, model.hotelId());
-                ps.setString(5, model.hotelCity());
+        batchSpec.update();
+    }
 
-                Array sqlArray = ps.getConnection().createArrayOf("Int64", roomsArray);
-                ps.setArray(6, sqlArray);
-
-                ps.setInt(7, model.roomsCount());
-                ps.setDate(8, Date.valueOf(model.arrivalDate()));
-                ps.setDate(9, Date.valueOf(model.departureDate()));
-                ps.setInt(10, model.totalNights());
-                ps.setBigDecimal(11, model.totalCost());
-                ps.setTimestamp(12, createdAtTimestamp);
-            }
-
-            @Override
-            public int getBatchSize() {
-                return statistics.size();
-            }
-        });
+    private Map<String, Object> toParams(StatisticModel model) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("event_id", model.eventId());
+        params.put("booking_id", model.bookingId());
+        params.put("user_id", model.userId());
+        params.put("hotel_id", model.hotelId());
+        params.put("hotel_city", model.hotelCity());
+        params.put("room_ids", model.roomIds().toArray(new Long[0]));
+        params.put("rooms_count", model.roomsCount());
+        params.put("arrival_date", model.arrivalDate());
+        params.put("departure_date", model.departureDate());
+        params.put("total_nights", model.totalNights());
+        params.put("total_cost", model.totalCost());
+        params.put("created_at", formatDate(model));
+        return params;
     }
 
     private Timestamp formatDate(StatisticModel statisticModel) {
